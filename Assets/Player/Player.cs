@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
 	private SlideController slideController;
 	private Rigidbody2D rigidBody;
 	private float gravityScale;
-	private bool dashing;
+	public bool dashing;
 	private bool dashPressed = false;
 
 	private InputAction dashAction;
