@@ -245,5 +245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e7854eac4f5f12e6a3fdb243b1a872c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 3
   moveSpeed: 1.2
   agroDist: 5

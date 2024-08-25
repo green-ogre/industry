@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Robot : MonoBehaviour
 {
+    public float maxHealth;
+    private float health;
+
     [SerializeField] public float moveSpeed = 0.8f;
     [SerializeField] public float agroDist = 5f;
 
@@ -16,6 +19,15 @@ public class Robot : MonoBehaviour
         // target = GameObject.Find("player").transform;
         rigidBody = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<Collider2D>();
+        health = maxHealth;
+    }
+
+    void Update()
+    {
+        if (health <= 0f)
+        {
+            Destroy(gameObject);
+        }
     }
 
     void FixedUpdate()
@@ -74,6 +86,8 @@ public class Robot : MonoBehaviour
             dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
             rigidBody.bodyType = RigidbodyType2D.Kinematic;
             boxCollider.enabled = false;
+
+            health -= 1f;
         }
     }
 }
