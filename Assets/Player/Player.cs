@@ -22,16 +22,19 @@ public class Player : MonoBehaviour
 	private bool dashContact = false;
 	public float dashContactTimeout = 0.1f;
 	private float dashContactWidth;
+	private float dashContactHeight;
 	private float dashContactTimer;
 
 	private bool dashRefreshed = false;
 
+	private Vector2 lastInputVector;
+
 	private SlideController slideController;
 	private Rigidbody2D rigidBody;
 	private Collider2D boxCollider;
+	private Collider2D dashInteractCollider;
 	private InputAction dashAction;
 	public Animator animator;
-
 
 	// Start is called before the first frame update
 	void Start()
@@ -75,6 +78,11 @@ public class Player : MonoBehaviour
 		var delta = Time.deltaTime;
 		var dashInput = dashAction.ReadValue<float>() > 0;
 
+		if (!dashing)
+		{
+			lastInputVector = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
+		}
+
 		// controllerRef.Move(horz, jump);
 		bool isGrounded = Mathf.Abs(rigidBody.linearVelocityY) < 1e-10;
 		animator.SetBool("isFalling", !isGrounded);
@@ -95,7 +103,8 @@ public class Player : MonoBehaviour
 		if (dashTimer > 0 && !dashContact)
 		{
 			dashTimer -= delta;
-			rigidBody.linearVelocity = slideController.lastDirection.normalized * DashSpeed;
+			// rigidBody.linearVelocity = slideController.lastDirection.normalized * DashSpeed;
+			rigidBody.linearVelocity = lastInputVector.normalized * DashSpeed;
 		}
 
 		if (dashTimer <= 0 && dashing)
@@ -116,7 +125,7 @@ public class Player : MonoBehaviour
 		if (dashContact)
 		{
 			dashContactTimer -= Time.deltaTime;
-			rigidBody.linearVelocityX = 0f;
+			rigidBody.linearVelocity = Vector2.zero;
 
 			if (dashContactTimer <= 0f)
 			{
@@ -125,10 +134,50 @@ public class Player : MonoBehaviour
 				slideController.enabled = true;
 				dashRefreshed = true;
 
-				rigidBody.MovePosition(new Vector2(rigidBody.position.x + dashContactWidth, rigidBody.position.y));
+				// rigidBody.MovePosition(new Vector2(rigidBody.position.x + dashContactWidth, rigidBody.position.y + dashContactHeight));
+
+				if (dashInteractCollider)
+				{
+					TeleportThroughObject(dashInteractCollider);
+				}
 				// EnterDash();
 			}
 		}
+	}
+
+	public void TeleportThroughObject(Collider2D other)
+	{
+		// Use the velocity direction for teleportation
+		Vector3 teleportDirection = lastInputVector;
+
+		// Get the bounds of both objects
+		Bounds teleportingBounds = boxCollider.bounds;
+		Bounds stationaryBounds = other.bounds;
+
+		// Calculate the distance to teleport
+		float distanceToTeleport = CalculateTeleportDistance(teleportingBounds, stationaryBounds, teleportDirection);
+
+		// Calculate new position
+		Vector3 newPosition = transform.position + teleportDirection * distanceToTeleport;
+
+		// Teleport the object by directly setting its position
+		rigidBody.MovePosition(newPosition);
+
+		// Optionally, you might want to preserve the velocity
+		// If you want to stop the object instead, uncomment the next line
+		// objectToTeleport.velocity = Vector2.zero;
+	}
+
+	private float CalculateTeleportDistance(Bounds teleportingBounds, Bounds stationaryBounds, Vector2 direction)
+	{
+		// Cast a ray from the teleporting object through the stationary object
+		RaycastHit2D hit = Physics2D.Raycast(teleportingBounds.center, direction);
+
+		// Calculate the distance to the far side of the stationary object
+		float distanceToFarSide = Vector2.Dot(stationaryBounds.max - teleportingBounds.center, direction);
+
+		// Add a small offset to ensure clearance
+		return distanceToFarSide + teleportingBounds.extents.magnitude + 0.1f;
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -139,6 +188,7 @@ public class Player : MonoBehaviour
 
 			dashContact = true;
 			slideController.enabled = false;
+			dashInteractCollider = other;
 
 			if (other.transform.position.x < transform.position.x)
 			{
@@ -147,6 +197,15 @@ public class Player : MonoBehaviour
 			else
 			{
 				dashContactWidth = (float)other.bounds.size.x + (float)boxCollider.bounds.size.x;
+			}
+
+			if (other.transform.position.y > transform.position.y)
+			{
+				dashContactHeight = -(float)other.bounds.size.y - (float)boxCollider.bounds.size.y;
+			}
+			else
+			{
+				dashContactHeight = (float)other.bounds.size.y + (float)boxCollider.bounds.size.y;
 			}
 		}
 	}
@@ -159,6 +218,7 @@ public class Player : MonoBehaviour
 
 			dashContact = true;
 			slideController.enabled = false;
+			dashInteractCollider = other.collider;
 
 			if (other.transform.position.x < transform.position.x)
 			{
@@ -167,6 +227,15 @@ public class Player : MonoBehaviour
 			else
 			{
 				dashContactWidth = (float)other.collider.bounds.size.x + (float)boxCollider.bounds.size.x;
+			}
+
+			if (other.transform.position.y < transform.position.y)
+			{
+				dashContactHeight = -(float)other.collider.bounds.size.y - (float)boxCollider.bounds.size.y;
+			}
+			else
+			{
+				dashContactHeight = (float)other.collider.bounds.size.y + (float)boxCollider.bounds.size.y;
 			}
 		}
 	}
