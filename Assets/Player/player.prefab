@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3796678637252038398}
   - component: {fileID: 1077780548507661431}
   - component: {fileID: 1135223006549957685}
-  - component: {fileID: 6791228787518518285}
   - component: {fileID: 816463498217187963}
+  - component: {fileID: 6791228787518518285}
   - component: {fileID: 5125343844618767101}
   - component: {fileID: 2335656114935234497}
   m_Layer: 0
@@ -114,6 +114,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &816463498217187963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845963905284897806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc73cc5761c09ab4780478604510113f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 1077780548507661431}
 --- !u!114 &6791228787518518285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,19 +163,6 @@ MonoBehaviour:
     <remainingVelocity>k__BackingField: {x: 0, y: 0}
     <position>k__BackingField: {x: 0, y: 0}
     <iterationsUsed>k__BackingField: 0
---- !u!114 &816463498217187963
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 845963905284897806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc73cc5761c09ab4780478604510113f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 1077780548507661431}
 --- !u!50 &5125343844618767101
 Rigidbody2D:
   serializedVersion: 5

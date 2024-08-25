@@ -25,6 +25,9 @@ public class Player : MonoBehaviour
 		// bool jump = Input.GetAxis("Jump") > 0;
 
 		// controllerRef.Move(horz, jump);
-		animator.SetBool("isRunning", rigidBody.linearVelocity.x > 0f);
+		bool isGrounded = Mathf.Abs(rigidBody.linearVelocityY) < 1e-10;
+		animator.SetBool("isFalling", !isGrounded);
+		float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));
+		animator.SetBool("isRunning", Mathf.Abs(x) > 1e-10 && isGrounded);
 	}
 }
