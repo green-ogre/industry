@@ -5,6 +5,7 @@ public class Robot : MonoBehaviour
     public float maxHealth;
     private float health;
 
+    [SerializeField] public float maxMoveSpeed = 0.8f;
     [SerializeField] public float moveSpeed = 0.8f;
     [SerializeField] public float agroDist = 5f;
 
@@ -13,6 +14,10 @@ public class Robot : MonoBehaviour
     private Rigidbody2D rigidBody;
     private Collider2D boxCollider;
     private float dashContactTimer;
+    private Vector2 knockbackVector;
+    public float recievedKnockbackStrength;
+    public bool invincible = false;
+    public AudioSource takeHit;
 
     void Start()
     {
@@ -41,21 +46,15 @@ public class Robot : MonoBehaviour
             {
                 rigidBody.bodyType = RigidbodyType2D.Dynamic;
                 boxCollider.enabled = true;
+                rigidBody.linearVelocity = knockbackVector.normalized * recievedKnockbackStrength;
             }
         }
         else if (target)
         {
-            if (Vector3.Distance(target.position, transform.position) > agroDist)
-            {
-                moveDirection = Vector3.zero;
-            }
-            else
-            {
-                Vector3 diff = target.position - transform.position;
-                moveDirection = (diff).normalized;
-            }
-
-            rigidBody.linearVelocity = new Vector2(moveDirection.x, moveDirection.y) * moveSpeed;
+            Vector3 diff = target.position - transform.position;
+            moveDirection = diff.normalized;
+            var newVelocity = Vector2.ClampMagnitude(new Vector2(moveDirection.x, moveDirection.y) * moveSpeed, maxMoveSpeed);
+            rigidBody.linearVelocity = newVelocity;
         }
     }
 
@@ -86,8 +85,14 @@ public class Robot : MonoBehaviour
             dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
             rigidBody.bodyType = RigidbodyType2D.Kinematic;
             boxCollider.enabled = false;
+            Rigidbody2D playerRigid = other.gameObject.GetComponent<Rigidbody2D>();
+            knockbackVector = playerRigid.linearVelocity;
 
-            health -= 1f;
+            if (!invincible)
+            {
+                health -= 1f;
+                AudioMaster.instance.PlayClip(takeHit.clip, Vector3.zero, 1f);
+            }
         }
     }
 }
