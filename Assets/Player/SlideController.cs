@@ -4,12 +4,14 @@ using UnityEngine.InputSystem;
 
 public class SlideController : MonoBehaviour
 {
-
+    [SerializeField] private float MovementSpeed = 5f;
     [SerializeField] private float JumpForce = 10f;
     [SerializeField] private float HeldJumpForce = 40f;
     [SerializeField] private float MaximumFallSpeed = 20f;
     [SerializeField] private float MaximumJumpTime = 0.2f;
-    [SerializeField] private float MovementSpeed = 5f;
+    [SerializeField, Range(0, 1)] private float AirAcceleration = 0.3f;
+    [SerializeField, Range(0, 1)] private float AirDamping = 0.95f;
+
 
     public Rigidbody2D.SlideMovement SlideMovement = new Rigidbody2D.SlideMovement();
     private Rigidbody2D.SlideResults slideResults;
@@ -25,6 +27,8 @@ public class SlideController : MonoBehaviour
     private bool jumpEnabled = true;
     private bool slideEnabled = true;
     [System.NonSerialized] public bool isGrounded = true;
+
+    private Vector2 effectiveVelocity;
 
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -69,6 +73,59 @@ public class SlideController : MonoBehaviour
 
     void FixedUpdate()
     {
+        var previousGrounded = isGrounded;
+
+        if (slideEnabled)
+        {
+            // ground movement
+            if (isGrounded)
+            {
+                var velocity = CalculateVelocity();
+
+                lastVelocity = new Vector2(velocity.x, Rigidbody.linearVelocityY);
+
+                var previousPos = Rigidbody.position;
+                slideResults = Rigidbody.Slide(velocity, Time.deltaTime, SlideMovement);
+                effectiveVelocity = new Vector2((slideResults.position.x - previousPos.x) / Time.deltaTime, Rigidbody.linearVelocityY);
+            }
+            // air movement
+            else
+            {
+                var velocity = CalculateVelocity();
+
+                Rigidbody.linearVelocity *= new Vector2(AirDamping, 1);
+
+                if (velocity.x > 0)
+                {
+                    if (Rigidbody.linearVelocityX < MovementSpeed)
+                    {
+                        Rigidbody.linearVelocity += new Vector2(velocity.x * AirAcceleration, 0);
+                        if (Rigidbody.linearVelocityX > MovementSpeed)
+                        {
+                            Rigidbody.linearVelocity = new Vector2(MovementSpeed, Rigidbody.linearVelocityY);
+                        }
+                    }
+                }
+                else if (velocity.x < 0)
+                {
+                    if (Rigidbody.linearVelocityX > -MovementSpeed)
+                    {
+                        Rigidbody.linearVelocity += new Vector2(velocity.x * AirAcceleration, 0);
+                        if (Rigidbody.linearVelocityX < -MovementSpeed)
+                        {
+                            Rigidbody.linearVelocity = new Vector2(-MovementSpeed, Rigidbody.linearVelocityY);
+                        }
+                    }
+                }
+
+                if (Rigidbody.linearVelocityY < -MaximumFallSpeed)
+                {
+                    Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, -MaximumFallSpeed);
+                }
+            }
+        }
+
+
         UpdateGrounded();
 
         if (jumpEnabled)
@@ -76,7 +133,9 @@ public class SlideController : MonoBehaviour
             bool justJumped = UpdateJump(Time.fixedDeltaTime);
             if (justJumped)
             {
-                Rigidbody.AddForceY(JumpForce, ForceMode2D.Impulse);
+                // Rigidbody.AddForceY(JumpForce, ForceMode2D.Impulse);
+                Rigidbody.linearVelocity = new Vector2(0, JumpForce + effectiveVelocity.y);
+                isGrounded = false;
             }
             else if (!jumpReleased && jumpHeld < MaximumJumpTime)
             {
@@ -84,18 +143,18 @@ public class SlideController : MonoBehaviour
             }
         }
 
-        if (slideEnabled)
+        if (previousGrounded && !isGrounded)
         {
-            var velocity = CalculateVelocity();
-
-            if (Rigidbody.linearVelocityY < -MaximumFallSpeed)
-            {
-                Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, -MaximumFallSpeed);
-            }
-
-            lastVelocity = new Vector2(velocity.x, Rigidbody.linearVelocityY);
-            slideResults = Rigidbody.Slide(velocity, Time.deltaTime, SlideMovement);
+            AirTransition();
         }
+    }
+
+    /// <summary>
+    /// Transition from ground sliding to air movement.
+    /// </summary>
+    private void AirTransition()
+    {
+        Rigidbody.linearVelocity += new Vector2(effectiveVelocity.x, 0);
     }
 
     private Vector2 CalculateVelocity()
@@ -139,7 +198,7 @@ public class SlideController : MonoBehaviour
         }
 
         bool justPressed = false;
-        if (slideResults.surfaceHit && jump && jumpReleased)
+        if (isGrounded && jump && jumpReleased)
         {
             jumpReleased = false;
             justPressed = true;
@@ -158,7 +217,7 @@ public class SlideController : MonoBehaviour
 
     private void UpdateGrounded()
     {
-        if (slideEnabled)
+        if (slideEnabled && isGrounded)
         {
             isGrounded = slideResults.surfaceHit;
         }
