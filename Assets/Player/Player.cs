@@ -80,7 +80,11 @@ public class Player : MonoBehaviour
 
 		if (!dashing)
 		{
-			lastInputVector = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
+			Vector2 lastInput = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
+			if (lastInput.magnitude > 0.2)
+			{
+				lastInputVector = lastInput;
+			}
 		}
 
 		// controllerRef.Move(horz, jump);
