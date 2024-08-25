@@ -5,19 +5,18 @@ public class Robot : MonoBehaviour
     public float maxHealth;
     private float health;
 
-    [SerializeField] public float maxMoveSpeed = 0.8f;
-    [SerializeField] public float moveSpeed = 0.8f;
-    [SerializeField] public float agroDist = 5f;
+    public float maxMoveSpeed = 0.8f;
+    public float moveSpeed = 0.8f;
+    public float agroDist = 5f;
 
     private SlideController slideController;
+
+    private Knockback knockback;
 
     private Transform target;
     private Vector3 moveDirection;
     private Rigidbody2D rigidBody;
     private Collider2D boxCollider;
-    private float dashContactTimer;
-    private Vector2 knockbackVector;
-    public float recievedKnockbackStrength;
     public bool invincible = false;
     public AudioClip[] soundFX = new AudioClip[5];
 
@@ -27,6 +26,7 @@ public class Robot : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<Collider2D>();
         slideController = GetComponent<SlideController>();
+        knockback = GetComponent<Knockback>();
         health = maxHealth;
     }
 
@@ -37,60 +37,22 @@ public class Robot : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (dashContactTimer > 0)
+        if (!knockback.inKnockback)
         {
-            dashContactTimer -= Time.deltaTime;
-            rigidBody.linearVelocity = Vector2.zero;
-
-            if (dashContactTimer <= 0f)
-            {
-                rigidBody.bodyType = RigidbodyType2D.Dynamic;
-                boxCollider.enabled = true;
-                // slideController.enabled = true;
-                rigidBody.linearVelocityX = knockbackVector.normalized.x * recievedKnockbackStrength;
-                // rigidBody.linearVelocity = knockbackVector.normalized * recievedKnockbackStrength;
-            }
-        }
-        else if (target)
-        {
-
-            if (slideController.enabled)
-            {
-
-                Vector3 diff = target.position - transform.position;
-                slideController.horizontalInput = diff.x;
-                // moveDirection = diff.normalized;
-                // var newVelocity = Vector2.ClampMagnitude(new Vector2(moveDirection.x, moveDirection.y) * moveSpeed, maxMoveSpeed);
-                // rigidBody.linearVelocity = newVelocity;
-            }
-            else
-            {
-                if (rigidBody.linearVelocity.magnitude < 0.1f)
-                {
-                    slideController.enabled = true;
-                }
-            }
+            Vector3 diff = target.position - transform.position;
+            slideController.horizontalInput = diff.x;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // if (other.name == "player")
-        // {
-        //     target = other.transform;
-        // }
-
         Player player = other.gameObject.GetComponent<Player>();
         if (player && player.dashing)
         {
             Debug.Log("enemy recieve collision");
 
-            float timeForPlayerToDodgeThrough = 0.1f;
-            dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
             rigidBody.bodyType = RigidbodyType2D.Kinematic;
             boxCollider.enabled = false;
-            Rigidbody2D playerRigid = other.gameObject.GetComponent<Rigidbody2D>();
-            knockbackVector = playerRigid.linearVelocity;
             slideController.enabled = false;
 
             if (!invincible)
@@ -121,12 +83,8 @@ public class Robot : MonoBehaviour
         {
             Debug.Log("enemy recieve collision");
 
-            float timeForPlayerToDodgeThrough = 0.1f;
-            dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
             rigidBody.bodyType = RigidbodyType2D.Kinematic;
             boxCollider.enabled = false;
-            Rigidbody2D playerRigid = other.gameObject.GetComponent<Rigidbody2D>();
-            knockbackVector = playerRigid.linearVelocity;
             slideController.enabled = false;
 
             if (!invincible)
