@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   JumpForce: 11.3
-  MovementSpeed: 4
+  MovementSpeed: 5
   MaximumGravitySpeed: 11.3
   SlideMovement:
     <maxIterations>k__BackingField: 5
