@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
 
 	private SlideController slideController;
 	private Rigidbody2D rigidBody;
-	private Collider2D boxCollider;
+	public Collider2D boxCollider;
 	private Collider2D dashInteractCollider;
 	private InputAction dashAction;
 	public Animator animator;
@@ -47,7 +47,6 @@ public class Player : MonoBehaviour
 		dashAction = InputSystem.actions.FindAction("Dash");
 		slideController = GetComponent<SlideController>();
 		rigidBody = GetComponent<Rigidbody2D>();
-		boxCollider = GetComponent<Collider2D>();
 		moveAction = InputSystem.actions.FindAction("Move");
 		jumpAction = InputSystem.actions.FindAction("Jump");
 
@@ -203,9 +202,14 @@ public class Player : MonoBehaviour
 		return distanceToFarSide + teleportingBounds.extents.magnitude + 0.1f;
 	}
 
+	private static bool ContainsDashInteract(Collider2D other)
+	{
+		return (other.includeLayers.value & LayerMask.GetMask("DashInteract")) > 0 || (other.includeLayers.value & LayerMask.GetMask("Enemy")) > 0;
+	}
+
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (dashing && (other.includeLayers.value & LayerMask.GetMask("DashInteract")) > 0)
+		if (dashing && ContainsDashInteract(other))
 		{
 			Debug.Log("dash interact");
 
@@ -235,7 +239,7 @@ public class Player : MonoBehaviour
 
 	private void OnCollisionEnter2D(Collision2D other)
 	{
-		if (dashing && (other.collider.includeLayers.value & LayerMask.GetMask("DashInteract")) > 0)
+		if (dashing && ContainsDashInteract(other.collider))
 		{
 			Debug.Log("dash interact");
 
