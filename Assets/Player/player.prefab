@@ -130,6 +130,7 @@ MonoBehaviour:
   DashTime: 0.14
   DashRecoveryTime: 0.46
   dashing: 0
+  dashContactTimeout: 0.1
   animator: {fileID: 1077780548507661431}
 --- !u!114 &6791228787518518285
 MonoBehaviour:
@@ -159,7 +160,7 @@ MonoBehaviour:
     <selectedCollider>k__BackingField: {fileID: 0}
     <layerMask>k__BackingField:
       serializedVersion: 2
-      m_Bits: 8
+      m_Bits: 136
     <useLayerMask>k__BackingField: 1
     <useStartPosition>k__BackingField: 0
     <useNoMove>k__BackingField: 0
@@ -207,7 +208,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
