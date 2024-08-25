@@ -12,7 +12,6 @@ public class SlideController : MonoBehaviour
     [SerializeField, Range(0, 1)] private float AirAcceleration = 0.3f;
     [SerializeField, Range(0, 1)] private float AirDamping = 0.95f;
 
-
     public Rigidbody2D.SlideMovement SlideMovement = new Rigidbody2D.SlideMovement();
     private Rigidbody2D.SlideResults slideResults;
     private Rigidbody2D Rigidbody;
@@ -28,10 +27,10 @@ public class SlideController : MonoBehaviour
     private bool slideEnabled = true;
     [System.NonSerialized] public bool isGrounded = true;
 
-    private Vector2 effectiveVelocity;
+    [System.NonSerialized] public float horizontalInput;
+    [System.NonSerialized] public bool jumpInput;
 
-    private InputAction moveAction;
-    private InputAction jumpAction;
+    private Vector2 effectiveVelocity;
 
     public void SetJumpEnabled(bool enabled)
     {
@@ -67,8 +66,6 @@ public class SlideController : MonoBehaviour
     {
         Rigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        moveAction = InputSystem.actions.FindAction("Move");
-        jumpAction = InputSystem.actions.FindAction("Jump");
     }
 
     void FixedUpdate()
@@ -159,7 +156,7 @@ public class SlideController : MonoBehaviour
 
     private Vector2 CalculateVelocity()
     {
-        float horz = AxisNormalize.Movement(moveAction.ReadValue<Vector2>().x) * MovementSpeed;
+        float horz = AxisNormalize.Movement(horizontalInput) * MovementSpeed;
         if (horz > 0 && !facingRight)
         {
             lastDirection = new Vector2(horz, 0);
@@ -181,9 +178,7 @@ public class SlideController : MonoBehaviour
             return false;
         }
 
-        bool jump = jumpAction.ReadValue<float>() > 0;
-
-        if (!jumpReleased && !jump)
+        if (!jumpReleased && !jumpInput)
         {
             jumpReleased = true;
         }
@@ -198,7 +193,7 @@ public class SlideController : MonoBehaviour
         }
 
         bool justPressed = false;
-        if (isGrounded && jump && jumpReleased)
+        if (isGrounded && jumpInput && jumpReleased)
         {
             jumpReleased = false;
             justPressed = true;

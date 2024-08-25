@@ -37,6 +37,9 @@ public class Player : MonoBehaviour
 	private InputAction dashAction;
 	public Animator animator;
 
+	private InputAction moveAction;
+	private InputAction jumpAction;
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -45,6 +48,8 @@ public class Player : MonoBehaviour
 		slideController = GetComponent<SlideController>();
 		rigidBody = GetComponent<Rigidbody2D>();
 		boxCollider = GetComponent<Collider2D>();
+		moveAction = InputSystem.actions.FindAction("Move");
+		jumpAction = InputSystem.actions.FindAction("Jump");
 
 		dashContactTimer = dashContactTimeout;
 	}
@@ -78,6 +83,12 @@ public class Player : MonoBehaviour
 	Vector2 DashVector()
 	{
 		return lastInputVector * DashSpeed;
+	}
+
+	void Update()
+	{
+		slideController.horizontalInput = moveAction.ReadValue<Vector2>().x;
+		slideController.jumpInput = jumpAction.ReadValue<float>() > 0;
 	}
 
 	// Update is called once per frame
