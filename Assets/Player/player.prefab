@@ -126,6 +126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc73cc5761c09ab4780478604510113f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DashSpeed: 32
+  DashTime: 0.14
+  DashRecoveryTime: 0.46
 --- !u!50 &5125343844618767101
 Rigidbody2D:
   serializedVersion: 5
@@ -213,7 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   JumpForce: 10
   HeldJumpForce: 40
-  MaximumGravitySpeed: 20
+  MaximumFallSpeed: 20
   MaximumJumpTime: 0.2
   MovementSpeed: 5
   SlideMovement:
@@ -233,3 +236,4 @@ MonoBehaviour:
     <useNoMove>k__BackingField: 0
     <useSimulationMove>k__BackingField: 0
     <useAttachedTriggers>k__BackingField: 0
+  lastDirection: {x: 0, y: 0}

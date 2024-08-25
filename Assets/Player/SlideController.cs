@@ -20,6 +20,7 @@ public class SlideController : MonoBehaviour
     private float jumpHeld = 0;
 
     public Vector2 lastDirection;
+    public Vector2 lastVelocity;
     private bool jumpEnabled = true;
     private bool slideEnabled = true;
 
@@ -88,6 +89,7 @@ public class SlideController : MonoBehaviour
                 Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, -MaximumFallSpeed);
             }
 
+            lastVelocity = new Vector2(velocity.x, Rigidbody.linearVelocityY);
             slideResults = Rigidbody.Slide(velocity, Time.deltaTime, SlideMovement);
         }
     }

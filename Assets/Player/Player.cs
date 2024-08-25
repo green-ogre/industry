@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 	private Rigidbody2D rigidBody;
 	private float gravityScale;
 	private bool dashing;
-	private bool recovering;
+	private bool dashPressed = false;
 
 	private InputAction dashAction;
 
@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
 		slideController.SetJumpEnabled(false);
 		slideController.SetSlideEnabled(false);
 		dashing = true;
-		recovering = true;
+		dashPressed = true;
 	}
 
 	void ExitDash()
@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
 		slideController.SetJumpEnabled(true);
 		slideController.SetSlideEnabled(true);
 		rigidBody.linearVelocity = Vector2.zero;
+		// rigidBody.linearVelocity = new Vector2(slideController.lastVelocity.x, 0);
 		dashing = false;
 	}
 
@@ -54,8 +55,9 @@ public class Player : MonoBehaviour
 	void FixedUpdate()
 	{
 		var delta = Time.deltaTime;
+		var dashInput = dashAction.ReadValue<float>() > 0;
 
-		if (dashAction.ReadValue<float>() > 0 && dashRecovery <= 0)
+		if (dashInput && dashRecovery <= 0 && !dashPressed)
 		{
 			dashTimer = DashTime;
 			dashRecovery = DashTime + DashRecoveryTime;
@@ -79,9 +81,9 @@ public class Player : MonoBehaviour
 			dashRecovery -= delta;
 		}
 
-		// if (dashRecovery <= 0 && dashing)
-		// {
-		// 	recovering = false;
-		// }
+		if (!dashInput && dashPressed)
+		{
+			dashPressed = false;
+		}
 	}
 }
