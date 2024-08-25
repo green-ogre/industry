@@ -222,19 +222,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4824455668790889388, guid: 67112fef7aae9554ba07326624cf3c56, type: 3}
       propertyPath: m_NormalizedViewPortRect.x
-      value: 0.0019354839
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4824455668790889388, guid: 67112fef7aae9554ba07326624cf3c56, type: 3}
       propertyPath: m_NormalizedViewPortRect.y
-      value: 0.015132409
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4824455668790889388, guid: 67112fef7aae9554ba07326624cf3c56, type: 3}
       propertyPath: m_NormalizedViewPortRect.width
-      value: 0.9961291
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4824455668790889388, guid: 67112fef7aae9554ba07326624cf3c56, type: 3}
       propertyPath: m_NormalizedViewPortRect.height
-      value: 0.96847415
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -356,7 +356,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 6
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 11
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -401,18 +401,18 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -1848432591, guid: f96f38a6f05b6b345809b436d59cf387, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 1
     m_Data:
@@ -658,6 +658,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3796678637252038398, guid: df746bd4618351024a22783186817a49, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5125343844618767101, guid: df746bd4618351024a22783186817a49, type: 3}
+      propertyPath: m_CollisionDetection
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
