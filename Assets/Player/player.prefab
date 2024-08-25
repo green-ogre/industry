@@ -211,9 +211,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 141e3262ac4bcaf458af213a9ce81e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  JumpForce: 11.3
+  JumpForce: 10
+  HeldJumpForce: 40
+  MaximumGravitySpeed: 20
+  MaximumJumpTime: 0.2
   MovementSpeed: 5
-  MaximumGravitySpeed: 11.3
   SlideMovement:
     <maxIterations>k__BackingField: 5
     <surfaceSlideAngle>k__BackingField: 90
@@ -231,7 +233,3 @@ MonoBehaviour:
     <useNoMove>k__BackingField: 0
     <useSimulationMove>k__BackingField: 0
     <useAttachedTriggers>k__BackingField: 0
-  SlideResults:
-    <remainingVelocity>k__BackingField: {x: 0, y: 0}
-    <position>k__BackingField: {x: 0, y: 0}
-    <iterationsUsed>k__BackingField: 0

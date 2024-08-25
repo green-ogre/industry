@@ -170,6 +170,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6791228787518518285, guid: df746bd4618351024a22783186817a49, type: 3}
+      propertyPath: JumpForce
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6791228787518518285, guid: df746bd4618351024a22783186817a49, type: 3}
+      propertyPath: HeldJumpForce
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6791228787518518285, guid: df746bd4618351024a22783186817a49, type: 3}
+      propertyPath: MaximumJumpTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6791228787518518285, guid: df746bd4618351024a22783186817a49, type: 3}
+      propertyPath: MaximumGravitySpeed
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

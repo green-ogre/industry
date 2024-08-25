@@ -1,12 +1,13 @@
-using NUnit.Framework.Constraints;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SlideController : MonoBehaviour
 {
 
     [SerializeField] private float JumpForce = 10f;
-    [SerializeField] private float MaximumGravitySpeed = 10f;
-    [SerializeField] private float MaximumJumpTime = 0.5f;
+    [SerializeField] private float HeldJumpForce = 40f;
+    [SerializeField] private float MaximumFallSpeed = 20f;
+    [SerializeField] private float MaximumJumpTime = 0.2f;
     [SerializeField] private float MovementSpeed = 5f;
 
     public Rigidbody2D.SlideMovement SlideMovement = new Rigidbody2D.SlideMovement();
@@ -18,65 +19,127 @@ public class SlideController : MonoBehaviour
     private bool jumpReleased = true;
     private float jumpHeld = 0;
 
+    public Vector2 lastDirection;
+    private bool jumpEnabled = true;
+    private bool slideEnabled = true;
+
+    private InputAction moveAction;
+    private InputAction jumpAction;
+
+    public void SetJumpEnabled(bool enabled)
+    {
+        // clear state when disabling
+        if (jumpEnabled && !enabled)
+        {
+            jumpReleased = true;
+            jumpHeld = 0;
+        }
+
+        jumpEnabled = enabled;
+    }
+
+    public void SetSlideEnabled(bool enabled)
+    {
+        slideEnabled = enabled;
+    }
+
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     // we'll assume a single contact point
+    //     if (collision.contactCount == 0)
+    //     {
+    //         return;
+    //     }
+
+    //     var contact = collision.GetContact(0);
+
+    //     Debug.Log(contact.normal);
+    // }
+
     void Start()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        moveAction = InputSystem.actions.FindAction("Move");
+        jumpAction = InputSystem.actions.FindAction("Jump");
     }
 
     void FixedUpdate()
     {
-        float horz = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal")) * MovementSpeed;
-        bool jump = Input.GetAxis("Jump") > 0;
+        if (jumpEnabled)
+        {
+            bool justJumped = UpdateJump(Time.fixedDeltaTime);
+            if (justJumped)
+            {
+                Rigidbody.AddForceY(JumpForce, ForceMode2D.Impulse);
+            }
+            else if (!jumpReleased && jumpHeld < MaximumJumpTime)
+            {
+                Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, Rigidbody.linearVelocityY + HeldJumpForce * Time.fixedDeltaTime);
+            }
+        }
 
-        bool justReleased = false;
+        if (slideEnabled)
+        {
+            var velocity = CalculateVelocity();
+
+            if (Rigidbody.linearVelocityY < -MaximumFallSpeed)
+            {
+                Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, -MaximumFallSpeed);
+            }
+
+            slideResults = Rigidbody.Slide(velocity, Time.deltaTime, SlideMovement);
+        }
+    }
+
+    private Vector2 CalculateVelocity()
+    {
+        float horz = AxisNormalize.Movement(moveAction.ReadValue<Vector2>().x) * MovementSpeed;
+        if (horz > 0 && !facingRight)
+        {
+            lastDirection = new Vector2(horz, 0);
+            Flip();
+        }
+        else if (horz < 0 && facingRight)
+        {
+            lastDirection = new Vector2(horz, 0);
+            Flip();
+        }
+
+        return new Vector2(horz, 0f);
+    }
+
+    private bool UpdateJump(float delta)
+    {
+        if (!jumpEnabled)
+        {
+            return false;
+        }
+
+        bool jump = jumpAction.ReadValue<float>() > 0;
+
         if (!jumpReleased && !jump)
         {
             jumpReleased = true;
-            justReleased = true;
         }
 
         if (!jumpReleased)
         {
-            jumpHeld += Time.fixedDeltaTime;
+            jumpHeld += delta;
         }
         else
         {
             jumpHeld = 0;
         }
 
-        // Calculate the horizontal velocity from keyboard input.
-        var velocity = new Vector2(horz, 0f);
-
+        bool justPressed = false;
         if (slideResults.surfaceHit && jump && jumpReleased)
         {
             jumpReleased = false;
+            justPressed = true;
         }
 
-        float jumpSlide;
-        float jumpVelocity;
-
-        if (!jumpReleased && jumpHeld < MaximumJumpTime)
-        {
-            // Rigidbody.AddForceY(JumpForce, ForceMode2D.Impulse);
-            Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, JumpForce);
-        }
-
-        if (Rigidbody.linearVelocityY < -MaximumGravitySpeed)
-        {
-            Rigidbody.linearVelocity = new Vector2(Rigidbody.linearVelocityX, -MaximumGravitySpeed);
-        }
-
-        if (horz > 0 && !facingRight)
-        {
-            Flip();
-        }
-        else if (horz < 0 && facingRight)
-        {
-            Flip();
-        }
-
-        slideResults = Rigidbody.Slide(velocity, Time.deltaTime, SlideMovement);
+        return justPressed;
     }
 
     private void Flip()
