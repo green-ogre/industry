@@ -140,8 +140,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   JumpForce: 11.3
-  MovementSpeed: 4
   MaximumGravitySpeed: 11.3
+  MaximumJumpTime: 0.5
+  MovementSpeed: 4
   SlideMovement:
     <maxIterations>k__BackingField: 5
     <surfaceSlideAngle>k__BackingField: 90
@@ -153,16 +154,12 @@ MonoBehaviour:
     <selectedCollider>k__BackingField: {fileID: 0}
     <layerMask>k__BackingField:
       serializedVersion: 2
-      m_Bits: 8
+      m_Bits: 136
     <useLayerMask>k__BackingField: 1
     <useStartPosition>k__BackingField: 0
     <useNoMove>k__BackingField: 0
     <useSimulationMove>k__BackingField: 0
     <useAttachedTriggers>k__BackingField: 0
-  SlideResults:
-    <remainingVelocity>k__BackingField: {x: 0, y: 0}
-    <position>k__BackingField: {x: 0, y: 0}
-    <iterationsUsed>k__BackingField: 0
 --- !u!50 &5125343844618767101
 Rigidbody2D:
   serializedVersion: 5
