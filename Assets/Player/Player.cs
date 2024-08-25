@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 	[SerializeField] private float DashSpeed = 15f;
 	[SerializeField] private float DashTime = 0.1f;
 	[SerializeField] private float DashRecoveryTime = 0.25f;
+	[SerializeField, Range(0, 1)] private float DashMomentum = 0.3f;
 
 	private float dashTimer = 0;
 	private float dashRecovery = 0;
@@ -59,6 +60,7 @@ public class Player : MonoBehaviour
 		slideController.SetSlideEnabled(false);
 		dashing = true;
 		dashPressed = true;
+		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 	}
 
 	void ExitDash()
@@ -67,9 +69,15 @@ public class Player : MonoBehaviour
 		rigidBody.gravityScale = 1f;
 		slideController.SetJumpEnabled(true);
 		slideController.SetSlideEnabled(true);
-		rigidBody.linearVelocity = Vector2.zero;
+		rigidBody.linearVelocity = DashVector() * DashMomentum;
 		// rigidBody.linearVelocity = new Vector2(slideController.lastVelocity.x, 0);
 		dashing = false;
+		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+	}
+
+	Vector2 DashVector()
+	{
+		return lastInputVector * DashSpeed;
 	}
 
 	// Update is called once per frame
@@ -108,7 +116,7 @@ public class Player : MonoBehaviour
 		{
 			dashTimer -= delta;
 			// rigidBody.linearVelocity = slideController.lastDirection.normalized * DashSpeed;
-			rigidBody.linearVelocity = lastInputVector.normalized * DashSpeed;
+			rigidBody.linearVelocity = DashVector();
 		}
 
 		if (dashTimer <= 0 && dashing)

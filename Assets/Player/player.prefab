@@ -129,6 +129,7 @@ MonoBehaviour:
   DashSpeed: 32
   DashTime: 0.14
   DashRecoveryTime: 0.46
+  DashMomentum: 0.3
   dashing: 0
   dashContactTimeout: 0.1
   animator: {fileID: 1077780548507661431}
@@ -144,11 +145,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 141e3262ac4bcaf458af213a9ce81e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MovementSpeed: 5
   JumpForce: 10
   HeldJumpForce: 40
   MaximumFallSpeed: 20
   MaximumJumpTime: 0.2
-  MovementSpeed: 5
+  AirAcceleration: 0.3
+  AirDamping: 0.95
   SlideMovement:
     <maxIterations>k__BackingField: 5
     <surfaceSlideAngle>k__BackingField: 90
