@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,7 @@ public class SlideController : MonoBehaviour
     public Vector2 lastVelocity;
     private bool jumpEnabled = true;
     private bool slideEnabled = true;
+    [System.NonSerialized] public bool isGrounded = true;
 
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -67,6 +69,8 @@ public class SlideController : MonoBehaviour
 
     void FixedUpdate()
     {
+        UpdateGrounded();
+
         if (jumpEnabled)
         {
             bool justJumped = UpdateJump(Time.fixedDeltaTime);
@@ -150,5 +154,23 @@ public class SlideController : MonoBehaviour
         facingRight = !facingRight;
 
         spriteRenderer.flipX = !spriteRenderer.flipX;
+    }
+
+    private void UpdateGrounded()
+    {
+        if (slideEnabled)
+        {
+            isGrounded = slideResults.surfaceHit;
+        }
+        else
+        {
+            var oldDisable = SlideMovement.useNoMove;
+            SlideMovement.useNoMove = true;
+            var result = Rigidbody.Slide(Vector2.zero, Time.deltaTime, SlideMovement);
+
+            isGrounded = result.surfaceHit;
+            SlideMovement.useNoMove = oldDisable;
+        }
+
     }
 }

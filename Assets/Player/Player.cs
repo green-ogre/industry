@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
 		}
 
 		// controllerRef.Move(horz, jump);
-		bool isGrounded = Mathf.Abs(rigidBody.linearVelocityY) < 1e-10;
+		bool isGrounded = slideController.isGrounded;
 		animator.SetBool("isFalling", !isGrounded);
 		float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));
 		animator.SetBool("isRunning", Mathf.Abs(x) > 1e-10 && isGrounded);
