@@ -17,7 +17,7 @@ public class Robot : MonoBehaviour
     private Vector2 knockbackVector;
     public float recievedKnockbackStrength;
     public bool invincible = false;
-    public AudioSource takeHit;
+    public AudioClip[] soundFX = new AudioClip[5];
 
     void Start()
     {
@@ -91,7 +91,7 @@ public class Robot : MonoBehaviour
             if (!invincible)
             {
                 health -= 1f;
-                AudioMaster.instance.PlayClip(takeHit.clip, Vector3.zero, 1f);
+                AudioMaster.instance.PlayClip(soundFX[0], Vector3.zero, 1f);
             }
         }
     }
