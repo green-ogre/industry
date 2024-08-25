@@ -30,4 +30,10 @@ public class Player : MonoBehaviour
 		float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));
 		animator.SetBool("isRunning", Mathf.Abs(x) > 1e-10 && isGrounded);
 	}
+
+	private void OnTriggerEnter2D(Collider2D other) {
+		if (other.name == "hook") {
+			Debug.Log("this is a hook");
+		}
+    }
 }

@@ -11,15 +11,13 @@ public class Robot : MonoBehaviour
 
     void Start()
     {
-        target = GameObject.Find("player").transform;
+        // target = GameObject.Find("player").transform;
         rigidBody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
         if (target) {
-
-            
             if (Vector3.Distance(target.position, transform.position) > agroDist) {
                 moveDirection = Vector3.zero;
             } 
@@ -35,6 +33,18 @@ public class Robot : MonoBehaviour
     {
         if (target) {
             rigidBody.linearVelocity = new Vector2(moveDirection.x, moveDirection.y) * moveSpeed;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.name == "player") {
+            target = other.transform;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if (other.name == "player") {
+            target = null;
         }
     }
 }
