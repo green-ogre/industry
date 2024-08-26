@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6791228787518518285}
   - component: {fileID: 5125343844618767101}
   - component: {fileID: 2335656114935234497}
-  - component: {fileID: 4111249600103721440}
+  - component: {fileID: 3027711635671407839}
   m_Layer: 9
   m_Name: player
   m_TagString: Untagged
@@ -131,6 +131,9 @@ MonoBehaviour:
   DashTime: 0.14
   DashRecoveryTime: 0.46
   DashMomentum: 0.3
+  DashMask:
+    serializedVersion: 2
+    m_Bits: 384
   dashing: 0
   dashContactTimeout: 0.1
   boxCollider: {fileID: 2335656114935234497}
@@ -246,7 +249,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.875}
   m_EdgeRadius: 0
---- !u!61 &4111249600103721440
+--- !u!61 &3027711635671407839
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -280,7 +283,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.06}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -290,5 +293,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.5, y: 0.875}
   m_EdgeRadius: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework.Constraints;
 using TMPro;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour
 	[SerializeField] private float DashTime = 0.1f;
 	[SerializeField] private float DashRecoveryTime = 0.25f;
 	[SerializeField, Range(0, 1)] private float DashMomentum = 0.3f;
+	[SerializeField] private LayerMask DashMask;
 
 	private float dashTimer = 0;
 	private float dashRecovery = 0;
@@ -19,14 +21,13 @@ public class Player : MonoBehaviour
 	private float gravityScale;
 	public bool dashing;
 	private bool dashPressed = false;
+	private bool dashAirRecovery = true;
 
 	private bool dashContact = false;
 	public float dashContactTimeout = 0.1f;
 	private float dashContactWidth;
 	private float dashContactHeight;
 	private float dashContactTimer;
-
-	private bool dashRefreshed = false;
 
 	private Vector2 lastInputVector;
 
@@ -65,6 +66,8 @@ public class Player : MonoBehaviour
 		dashing = true;
 		dashPressed = true;
 		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+		dashAirRecovery = false;
+		interactingColliders.Clear();
 	}
 
 	void ExitDash()
@@ -74,7 +77,7 @@ public class Player : MonoBehaviour
 		slideController.SetJumpEnabled(true);
 		slideController.SetSlideEnabled(true);
 		rigidBody.linearVelocity = DashVector() * DashMomentum;
-		// rigidBody.linearVelocity = new Vector2(slideController.lastVelocity.x, 0);
+		// rigidBody.linearVelocity = Vector2.zero;
 		dashing = false;
 		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
 	}
@@ -90,8 +93,16 @@ public class Player : MonoBehaviour
 		slideController.jumpInput = jumpAction.ReadValue<float>() > 0;
 	}
 
+	void RefreshDash()
+	{
+		dashAirRecovery = true;
+		dashRecovery = 0;
+	}
+
+	private List<Collider2D> interactingColliders = new();
+
 	// Update is called once per frame
-	void LateUpdate()
+	void FixedUpdate()
 	{
 		var delta = Time.deltaTime;
 		var dashInput = dashAction.ReadValue<float>() > 0;
@@ -111,13 +122,7 @@ public class Player : MonoBehaviour
 		float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));
 		animator.SetBool("isRunning", Mathf.Abs(x) > 1e-10 && isGrounded);
 
-		if (dashRefreshed)
-		{
-			dashRecovery = 0f;
-			dashRefreshed = false;
-		}
-
-		if (dashInput && dashRecovery <= 0 && !dashPressed)
+		if (dashInput && dashAirRecovery && dashRecovery <= 0 && !dashPressed)
 		{
 			EnterDash();
 		}
@@ -127,11 +132,64 @@ public class Player : MonoBehaviour
 			dashTimer -= delta;
 			// rigidBody.linearVelocity = slideController.lastDirection.normalized * DashSpeed;
 			rigidBody.linearVelocity = DashVector();
+
+			List<RaycastHit2D> results = new();
+			var filter = new ContactFilter2D();
+			filter.SetLayerMask(new LayerMask() { value = DashMask.value });
+			filter.useTriggers = true;
+
+			boxCollider.Cast(rigidBody.linearVelocity.normalized, filter, results, rigidBody.linearVelocity.magnitude * Time.deltaTime);
+			foreach (var hit in results)
+			{
+				if (!hit)
+				{
+					continue;
+				}
+
+				if (interactingColliders.Contains(hit.collider))
+				{
+					continue;
+				}
+				interactingColliders.Add(hit.collider);
+
+				var other = hit.collider;
+				rigidBody.linearVelocity = Vector2.zero;
+
+				rigidBody.position = hit.centroid;
+
+				dashContact = true;
+				slideController.enabled = false;
+				dashInteractCollider = other;
+
+
+				if (other.transform.position.x < transform.position.x)
+				{
+					dashContactWidth = -(float)other.bounds.size.x - (float)boxCollider.bounds.size.x;
+				}
+				else
+				{
+					dashContactWidth = (float)other.bounds.size.x + (float)boxCollider.bounds.size.x;
+				}
+
+				if (other.transform.position.y > transform.position.y)
+				{
+					dashContactHeight = -(float)other.bounds.size.y - (float)boxCollider.bounds.size.y;
+				}
+				else
+				{
+					dashContactHeight = (float)other.bounds.size.y + (float)boxCollider.bounds.size.y;
+				}
+			}
 		}
 
 		if (dashTimer <= 0 && dashing)
 		{
 			ExitDash();
+		}
+
+		if (dashTimer <= 0 && slideController.isGrounded && !dashAirRecovery)
+		{
+			dashAirRecovery = true;
 		}
 
 		if (dashRecovery > 0)
@@ -147,22 +205,18 @@ public class Player : MonoBehaviour
 		if (dashContact)
 		{
 			dashContactTimer -= Time.deltaTime;
-			rigidBody.linearVelocity = Vector2.zero;
 
 			if (dashContactTimer <= 0f)
 			{
 				dashContactTimer = dashContactTimeout;
 				dashContact = false;
 				slideController.enabled = true;
-				dashRefreshed = true;
-
-				// rigidBody.MovePosition(new Vector2(rigidBody.position.x + dashContactWidth, rigidBody.position.y + dashContactHeight));
+				RefreshDash();
 
 				if (dashInteractCollider)
 				{
 					TeleportThroughObject(dashInteractCollider);
 				}
-				// EnterDash();
 			}
 		}
 	}
@@ -207,15 +261,14 @@ public class Player : MonoBehaviour
 		return (other.includeLayers.value & LayerMask.GetMask("DashInteract")) > 0 || (other.includeLayers.value & LayerMask.GetMask("Enemy")) > 0;
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
+	private void HandleDashCollision(Collider2D other)
 	{
 		if (dashing && ContainsDashInteract(other))
 		{
-			Debug.Log("dash interact");
-
 			dashContact = true;
 			slideController.enabled = false;
 			dashInteractCollider = other;
+
 
 			if (other.transform.position.x < transform.position.x)
 			{
@@ -237,33 +290,13 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	private void OnCollisionEnter2D(Collision2D other)
-	{
-		if (dashing && ContainsDashInteract(other.collider))
-		{
-			Debug.Log("dash interact");
+	// private void OnTriggerEnter2D(Collider2D other)
+	// {
+	// 	HandleDashCollision(other);
+	// }
 
-			dashContact = true;
-			slideController.enabled = false;
-			dashInteractCollider = other.collider;
-
-			if (other.transform.position.x < transform.position.x)
-			{
-				dashContactWidth = -(float)other.collider.bounds.size.x - (float)boxCollider.bounds.size.x;
-			}
-			else
-			{
-				dashContactWidth = (float)other.collider.bounds.size.x + (float)boxCollider.bounds.size.x;
-			}
-
-			if (other.transform.position.y < transform.position.y)
-			{
-				dashContactHeight = -(float)other.collider.bounds.size.y - (float)boxCollider.bounds.size.y;
-			}
-			else
-			{
-				dashContactHeight = (float)other.collider.bounds.size.y + (float)boxCollider.bounds.size.y;
-			}
-		}
-	}
+	// private void OnCollisionEnter2D(Collision2D other)
+	// {
+	// 	HandleDashCollision(other.collider);
+	// }
 }
