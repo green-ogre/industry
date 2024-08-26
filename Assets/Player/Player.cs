@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
 		slideController.SetSlideEnabled(false);
 		dashing = true;
 		dashPressed = true;
-		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+		// rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 		dashAirRecovery = false;
 		interactingColliders.Clear();
 	}
@@ -79,7 +79,7 @@ public class Player : MonoBehaviour
 		rigidBody.linearVelocity = DashVector() * DashMomentum;
 		// rigidBody.linearVelocity = Vector2.zero;
 		dashing = false;
-		rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+		// rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
 	}
 
 	Vector2 DashVector()
