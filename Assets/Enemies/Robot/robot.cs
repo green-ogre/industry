@@ -2,36 +2,35 @@ using UnityEngine;
 
 public class Robot : MonoBehaviour
 {
-    public float maxHealth;
-    private float health;
-
-    public float maxMoveSpeed = 0.8f;
-    public float moveSpeed = 0.8f;
-    public float agroDist = 5f;
+    public int maxHealth;
+    private int health;
+    public float maxAgro;
 
     private SlideController slideController;
-
     private Knockback knockback;
+    private Transform player;
 
-    private Transform target;
-    private Vector3 moveDirection;
     private Rigidbody2D rigidBody;
     private Collider2D boxCollider;
     public bool invincible = false;
     public AudioClip[] soundFX = new AudioClip[5];
+    private HealthBar healthBar;
 
     void Start()
     {
-        // target = GameObject.Find("player").transform;
         rigidBody = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<Collider2D>();
         slideController = GetComponent<SlideController>();
         knockback = GetComponent<Knockback>();
+        healthBar = GetComponentInChildren<HealthBar>();
+        player = GameObject.Find("player").transform;
         health = maxHealth;
     }
 
     void Update()
     {
+        healthBar.health = health;
+
         if (health <= 0f)
         {
             Destroy(gameObject);
@@ -39,8 +38,19 @@ public class Robot : MonoBehaviour
 
         if (!knockback.inKnockback)
         {
-            Vector3 diff = target.position - transform.position;
-            slideController.horizontalInput = diff.x;
+            Vector3 diff = player.position - transform.position;
+            if (diff.magnitude <= maxAgro)
+            {
+                slideController.horizontalInput = diff.x;
+            }
+            else
+            {
+                slideController.horizontalInput = 0f;
+            }
+        }
+        else if (!knockback.inKnockback)
+        {
+            slideController.horizontalInput = 0f;
         }
     }
 
@@ -54,42 +64,11 @@ public class Robot : MonoBehaviour
             rigidBody.bodyType = RigidbodyType2D.Kinematic;
             boxCollider.enabled = false;
             slideController.enabled = false;
+            knockback.HandleCollisionEnter2D(other);
 
             if (!invincible)
             {
-                health -= 1f;
-                AudioMaster.instance.PlayClip(soundFX[0], Vector3.zero, 1f);
-            }
-            target = other.transform;
-        }
-        else if (player)
-        {
-            target = other.transform;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.name == "player")
-        {
-            target = null;
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        Player player = other.gameObject.GetComponent<Player>();
-        if (player && player.dashing)
-        {
-            Debug.Log("enemy recieve collision");
-
-            rigidBody.bodyType = RigidbodyType2D.Kinematic;
-            boxCollider.enabled = false;
-            slideController.enabled = false;
-
-            if (!invincible)
-            {
-                health -= 1f;
+                health -= 1;
                 AudioMaster.instance.PlayClip(soundFX[0], Vector3.zero, 1f);
             }
         }
