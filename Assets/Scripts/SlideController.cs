@@ -16,7 +16,7 @@ public class SlideController : MonoBehaviour
     private Rigidbody2D.SlideResults slideResults;
     private Rigidbody2D Rigidbody;
 
-    private bool facingRight = true;
+    public bool facingRight = true;
     private SpriteRenderer spriteRenderer;
     private bool jumpReleased = true;
     private float jumpHeld = 0;
@@ -65,7 +65,16 @@ public class SlideController : MonoBehaviour
     void Start()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
+        if (!Rigidbody)
+        {
+            Rigidbody = GetComponentInParent<Rigidbody2D>();
+        }
+
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if (!spriteRenderer)
+        {
+            spriteRenderer = GetComponentInParent<SpriteRenderer>();
+        }
     }
 
     void FixedUpdate()
