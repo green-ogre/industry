@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Robot : MonoBehaviour
+public class Laborer : MonoBehaviour
 {
     public int maxHealth;
     private int health;
@@ -18,9 +18,10 @@ public class Robot : MonoBehaviour
     private HealthBar healthBar;
     private Transform controllerTransform;
 
+
     void Start()
     {
-        controllerTransform = transform.Find("RobotBody");
+        controllerTransform = transform.Find("LaborerBody");
         rigidBody = GetComponentInChildren<Rigidbody2D>();
         boxCollider = GetComponentInChildren<Collider2D>();
         slideController = GetComponentInChildren<SlideController>();
@@ -65,6 +66,7 @@ public class Robot : MonoBehaviour
         {
             slideController.horizontalInput = 0f;
         }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)

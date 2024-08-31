@@ -15,8 +15,8 @@ TagManager:
   - Enemy
   - DashInteract
   - Player
-  - 
-  - 
+  - HitBox
+  - HurtBox
   - 
   - 
   - 

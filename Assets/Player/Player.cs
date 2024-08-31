@@ -7,15 +7,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum PlayerBodyType
+public enum PlayerBodyType : int
 {
-	DEFAULT,
-	BIPEDAL
+	LABORER,
+	ROBOT,
 }
 
 public class Player : MonoBehaviour
 {
-
 	[SerializeField] private float DashSpeed = 15f;
 	[SerializeField] private float DashTime = 0.1f;
 	[SerializeField] private float DashRecoveryTime = 0.25f;
@@ -49,78 +48,44 @@ public class Player : MonoBehaviour
 
 
 	public PlayerBodyType playerBodyType;
-	public GameObject bodyDefault;
-	public GameObject bodyBipedal;
+	public GameObject[] bodies;
 
 	public TMP_Text debugText;
 
 	public void SetPlayerBodyType(PlayerBodyType type)
 	{
-		var currentController = CurrentSlideController();
-
-		// TODO: Reset any state here if necessary
-		SlideController newController;
-		switch (type)
+		foreach (var body in bodies)
 		{
-			case PlayerBodyType.DEFAULT:
-				{
-					newController = bodyDefault.GetComponent<SlideController>();
-					break;
-				}
-			case PlayerBodyType.BIPEDAL:
-				{
-					newController = bodyBipedal.GetComponent<SlideController>();
-					break;
-				}
-			default:
-				{
-					newController = bodyDefault.GetComponent<SlideController>();
-					break;
-				}
+			body.gameObject.SetActive(false);
 		}
-
-		currentController.enabled = false;
-		newController.enabled = true;
+		var currentController = CurrentSlideController();
+		var newController = bodies[(int)type].GetComponent<SlideController>();
 		newController.facingRight = currentController.facingRight;
+
+		bodies[(int)type].transform.position = bodies[(int)playerBodyType].transform.position;
+		bodies[(int)type].GetComponent<Rigidbody2D>().position = bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position;
+		bodies[(int)type].gameObject.SetActive(true);
 
 		playerBodyType = type;
 	}
 
 	private SlideController CurrentSlideController()
 	{
-		switch (playerBodyType)
-		{
-			case PlayerBodyType.DEFAULT:
-				{
-					return bodyDefault.GetComponent<SlideController>();
-				}
-			case PlayerBodyType.BIPEDAL:
-				{
-					return bodyBipedal.GetComponent<SlideController>();
-				}
-			default:
-				{
-					Debug.Log("playerBodyType is null, returning currrent slide controller as default");
-					return bodyDefault.GetComponent<SlideController>();
-				}
-		}
+		return bodies[(int)playerBodyType].GetComponent<SlideController>();
 	}
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		rigidBody = GetComponent<Rigidbody2D>();
 		dashAction = InputSystem.actions.FindAction("Dash");
 		rigidBody = GetComponent<Rigidbody2D>();
 		moveAction = InputSystem.actions.FindAction("Move");
 		jumpAction = InputSystem.actions.FindAction("Jump");
 		dashContactTimer = dashContactTimeout;
-
-		playerBodyType = PlayerBodyType.DEFAULT;
-		bodyDefault.GetComponent<SlideController>().enabled = true;
-		bodyBipedal.GetComponent<SlideController>().enabled = false;
-
 		debugText = GetComponentInChildren<TMP_Text>();
+
+		playerBodyType = PlayerBodyType.LABORER;
+		SetPlayerBodyType(PlayerBodyType.LABORER);
 	}
 
 	void EnterDash()
@@ -188,13 +153,9 @@ public class Player : MonoBehaviour
 		}
 
 		// controllerRef.Move(horz, jump);
-		bool isGrounded = CurrentSlideController().isGrounded;
-		animator.SetBool("isFalling", !isGrounded);
-		float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));
-		animator.SetBool("isRunning", Mathf.Abs(x) > 1e-10 && isGrounded);
 
 
-		if (playerBodyType == PlayerBodyType.BIPEDAL)
+		if (playerBodyType == PlayerBodyType.LABORER)
 		{
 			var dashInput = dashAction.ReadValue<float>() > 0;
 			if (dashInput && dashAirRecovery && dashRecovery <= 0 && !dashPressed)
@@ -213,48 +174,48 @@ public class Player : MonoBehaviour
 				filter.SetLayerMask(new LayerMask() { value = DashMask.value });
 				filter.useTriggers = true;
 
-				boxCollider.Cast(rigidBody.linearVelocity.normalized, filter, results, rigidBody.linearVelocity.magnitude * Time.deltaTime);
-				foreach (var hit in results)
-				{
-					if (!hit)
-					{
-						continue;
-					}
+				// 	boxCollider.Cast(rigidBody.linearVelocity.normalized, filter, results, rigidBody.linearVelocity.magnitude * Time.deltaTime);
+				// 	foreach (var hit in results)
+				// 	{
+				// 		if (!hit)
+				// 		{
+				// 			continue;
+				// 		}
 
-					if (interactingColliders.Contains(hit.collider))
-					{
-						continue;
-					}
-					interactingColliders.Add(hit.collider);
+				// 		if (interactingColliders.Contains(hit.collider))
+				// 		{
+				// 			continue;
+				// 		}
+				// 		interactingColliders.Add(hit.collider);
 
-					var other = hit.collider;
-					rigidBody.linearVelocity = Vector2.zero;
+				// 		var other = hit.collider;
+				// 		rigidBody.linearVelocity = Vector2.zero;
 
-					rigidBody.position = hit.centroid;
+				// 		rigidBody.position = hit.centroid;
 
-					dashContact = true;
-					CurrentSlideController().enabled = false;
-					dashInteractCollider = other;
+				// 		dashContact = true;
+				// 		CurrentSlideController().enabled = false;
+				// 		dashInteractCollider = other;
 
 
-					if (other.transform.position.x < transform.position.x)
-					{
-						dashContactWidth = -(float)other.bounds.size.x - (float)boxCollider.bounds.size.x;
-					}
-					else
-					{
-						dashContactWidth = (float)other.bounds.size.x + (float)boxCollider.bounds.size.x;
-					}
+				// 		if (other.transform.position.x < transform.position.x)
+				// 		{
+				// 			dashContactWidth = -(float)other.bounds.size.x - (float)boxCollider.bounds.size.x;
+				// 		}
+				// 		else
+				// 		{
+				// 			dashContactWidth = (float)other.bounds.size.x + (float)boxCollider.bounds.size.x;
+				// 		}
 
-					if (other.transform.position.y > transform.position.y)
-					{
-						dashContactHeight = -(float)other.bounds.size.y - (float)boxCollider.bounds.size.y;
-					}
-					else
-					{
-						dashContactHeight = (float)other.bounds.size.y + (float)boxCollider.bounds.size.y;
-					}
-				}
+				// 		if (other.transform.position.y > transform.position.y)
+				// 		{
+				// 			dashContactHeight = -(float)other.bounds.size.y - (float)boxCollider.bounds.size.y;
+				// 		}
+				// 		else
+				// 		{
+				// 			dashContactHeight = (float)other.bounds.size.y + (float)boxCollider.bounds.size.y;
+				// 		}
+				// 	}
 			}
 
 			if (dashTimer <= 0 && dashing)
@@ -279,20 +240,20 @@ public class Player : MonoBehaviour
 
 			if (dashContact)
 			{
-				dashContactTimer -= Time.deltaTime;
+				// dashContactTimer -= Time.deltaTime;
 
-				if (dashContactTimer <= 0f)
-				{
-					dashContactTimer = dashContactTimeout;
-					dashContact = false;
-					CurrentSlideController().enabled = true;
-					RefreshDash();
+				// if (dashContactTimer <= 0f)
+				// {
+				// 	dashContactTimer = dashContactTimeout;
+				// 	dashContact = false;
+				// 	CurrentSlideController().enabled = true;
+				// 	RefreshDash();
 
-					if (dashInteractCollider)
-					{
-						TeleportThroughObject(dashInteractCollider);
-					}
-				}
+				// 	if (dashInteractCollider)
+				// 	{
+				// 		TeleportThroughObject(dashInteractCollider);
+				// 	}
+				// }
 			}
 		}
 	}
@@ -370,24 +331,24 @@ public class Player : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 		{
-			SetPlayerBodyType(PlayerBodyType.DEFAULT);
+			SetPlayerBodyType(PlayerBodyType.LABORER);
 		}
 
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			SetPlayerBodyType(PlayerBodyType.BIPEDAL);
+			SetPlayerBodyType(PlayerBodyType.ROBOT);
 		}
 
 		switch (playerBodyType)
 		{
-			case PlayerBodyType.DEFAULT:
+			case PlayerBodyType.LABORER:
 				{
-					debugText.text = "BodyType: Default";
+					debugText.text = "BodyType: Laborer";
 					break;
 				}
-			case PlayerBodyType.BIPEDAL:
+			case PlayerBodyType.ROBOT:
 				{
-					debugText.text = "BodyType: Bipedal";
+					debugText.text = "BodyType: ROBOT";
 					break;
 				}
 		}

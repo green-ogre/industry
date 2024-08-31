@@ -9,7 +9,7 @@ public class DefaultBody : MonoBehaviour
     {
         if (player && Input.GetKeyDown(KeyCode.E))
         {
-            player.SetPlayerBodyType(PlayerBodyType.DEFAULT);
+            //             player.SetPlayerBodyType(PlayerBodyType.DEFAULT);
         }
     }
 

@@ -9,7 +9,7 @@ public class Bipedal : MonoBehaviour
     {
         if (player && Input.GetKeyDown(KeyCode.E))
         {
-            player.SetPlayerBodyType(PlayerBodyType.BIPEDAL);
+            // player.SetPlayerBodyType(PlayerBodyType.BIPEDAL);
         }
     }
 
