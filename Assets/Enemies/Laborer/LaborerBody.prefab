@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3017460253797374148}
   - component: {fileID: 9023498054715759438}
   - component: {fileID: 4942624089276663442}
+  - component: {fileID: 8994669169464143955}
   - component: {fileID: 386963328396202685}
   - component: {fileID: 2716468521600800893}
   - component: {fileID: 161596844387184097}
@@ -71,26 +72,31 @@ MonoBehaviour:
   MaximumJumpTime: 0.2
   AirAcceleration: 0.3
   AirDamping: 0.95
-  SlideMovement:
-    <maxIterations>k__BackingField: 3
-    <surfaceSlideAngle>k__BackingField: 90
-    <gravitySlipAngle>k__BackingField: 90
-    <surfaceUp>k__BackingField: {x: 0, y: 1}
-    <surfaceAnchor>k__BackingField: {x: 0, y: -1}
-    <gravity>k__BackingField: {x: 0, y: -9.81}
-    <startPosition>k__BackingField: {x: 0, y: 0}
-    <selectedCollider>k__BackingField: {fileID: 0}
-    <layerMask>k__BackingField:
-      serializedVersion: 2
-      m_Bits: 4294967295
-    <useLayerMask>k__BackingField: 0
-    <useStartPosition>k__BackingField: 0
-    <useNoMove>k__BackingField: 0
-    <useSimulationMove>k__BackingField: 0
-    <useAttachedTriggers>k__BackingField: 0
   facingRight: 1
   lastDirection: {x: 0, y: 0}
   lastVelocity: {x: 0, y: 0}
+--- !u!114 &8994669169464143955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3329104616757031205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4719bd71ad3ff87e8ac55701c235548c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashEnabled: 1
+  DashSpeed: 15
+  DashTime: 0.1
+  DashRecoveryTime: 0.25
+  DashMomentum: 0.3
+  DashMask:
+    serializedVersion: 2
+    m_Bits: 384
+  dashing: 0
+  dashContactTimeout: 0.1
 --- !u!50 &386963328396202685
 Rigidbody2D:
   serializedVersion: 5

@@ -25,7 +25,7 @@ public class SlideController : MonoBehaviour
     public Vector2 lastVelocity;
     private bool jumpEnabled = true;
     private bool slideEnabled = true;
-    [System.NonSerialized] public bool isGrounded = true;
+    public bool isGrounded = true;
 
     [System.NonSerialized] public float horizontalInput;
     [System.NonSerialized] public bool jumpInput;
