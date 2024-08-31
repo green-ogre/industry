@@ -9,11 +9,13 @@ public class TakeOver : MonoBehaviour
 
     private SpriteRenderer renderer;
     private Player player;
+    private SlideController slideController;
     private Vector2 lastInputVector;
 
     void Start()
     {
         renderer = GetComponent<SpriteRenderer>();
+        slideController = GetComponent<SlideController>();
         player = GameObject.Find("player").GetComponent<Player>();
     }
 
@@ -36,6 +38,7 @@ public class TakeOver : MonoBehaviour
                 // TODO: see if the last input is pointing towards you
                 player.SetPlayerBodyType(playerBodyType);
                 player.SetPosition(transform.position);
+                player.SetOrientation(slideController.facingRight);
                 Destroy(gameObject);
             }
         }

@@ -32,9 +32,6 @@ public class Player : MonoBehaviour
 		{
 			body.gameObject.SetActive(false);
 		}
-		var currentController = CurrentSlideController();
-		var newController = bodies[(int)type].GetComponent<SlideController>();
-		newController.facingRight = currentController.facingRight;
 
 		bodies[(int)type].transform.position = bodies[(int)playerBodyType].transform.position;
 		bodies[(int)type].GetComponent<Rigidbody2D>().position = bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position;
@@ -48,6 +45,11 @@ public class Player : MonoBehaviour
 		return bodies[(int)playerBodyType].GetComponent<SlideController>();
 	}
 
+	private SpriteRenderer CurrentSpriteRenderer()
+	{
+		return bodies[(int)playerBodyType].GetComponent<SpriteRenderer>();
+	}
+
 	public Vector3 GetCurrentPosition()
 	{
 		return bodies[(int)playerBodyType].transform.position;
@@ -57,6 +59,12 @@ public class Player : MonoBehaviour
 	{
 		bodies[(int)playerBodyType].transform.position = position;
 		bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position = position;
+	}
+
+	public void SetOrientation(bool facingRight)
+	{
+		CurrentSlideController().facingRight = facingRight;
+		CurrentSpriteRenderer().flipX = !facingRight;
 	}
 
 	private bool IsDashing()
