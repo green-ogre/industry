@@ -48,6 +48,11 @@ public class Player : MonoBehaviour
 		return bodies[(int)playerBodyType].GetComponent<SlideController>();
 	}
 
+	public Vector3 GetCurrentPosition()
+	{
+		return bodies[(int)playerBodyType].transform.position;
+	}
+
 	private bool IsDashing()
 	{
 		var dash = bodies[(int)playerBodyType].GetComponent<Dash>();

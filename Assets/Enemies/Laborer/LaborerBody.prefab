@@ -75,6 +75,7 @@ MonoBehaviour:
   facingRight: 1
   lastDirection: {x: 0, y: 0}
   lastVelocity: {x: 0, y: 0}
+  isGrounded: 1
 --- !u!114 &8994669169464143955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,11 +120,11 @@ Rigidbody2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &2716468521600800893
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -140,7 +141,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
