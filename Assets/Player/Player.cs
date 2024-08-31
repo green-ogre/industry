@@ -53,6 +53,12 @@ public class Player : MonoBehaviour
 		return bodies[(int)playerBodyType].transform.position;
 	}
 
+	public void SetPosition(Vector3 position)
+	{
+		bodies[(int)playerBodyType].transform.position = position;
+		bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position = position;
+	}
+
 	private bool IsDashing()
 	{
 		var dash = bodies[(int)playerBodyType].GetComponent<Dash>();
