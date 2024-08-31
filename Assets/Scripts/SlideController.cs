@@ -12,7 +12,7 @@ public class SlideController : MonoBehaviour
     [SerializeField, Range(0, 1)] private float AirAcceleration = 0.3f;
     [SerializeField, Range(0, 1)] private float AirDamping = 0.95f;
 
-    public Rigidbody2D.SlideMovement SlideMovement = new();
+    private Rigidbody2D.SlideMovement SlideMovement = new();
     private Rigidbody2D.SlideResults slideResults;
     private Rigidbody2D Rigidbody;
 
@@ -75,6 +75,14 @@ public class SlideController : MonoBehaviour
         {
             spriteRenderer = GetComponentInParent<SpriteRenderer>();
         }
+
+        SlideMovement = new Rigidbody2D.SlideMovement()
+        {
+            gravity = Vector2.zero,
+            surfaceAnchor = new Vector2(0, -0.05f),
+            useLayerMask = true,
+            layerMask = new LayerMask() { value = LayerMask.NameToLayer("Ground") },
+        };
     }
 
     void FixedUpdate()
