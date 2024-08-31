@@ -88,7 +88,6 @@ public class Player : MonoBehaviour
 
 		CurrentSlideController().horizontalInput = moveAction.ReadValue<Vector2>().x;
 		CurrentSlideController().jumpInput = jumpAction.ReadValue<float>() > 0;
-
 	}
 
 	private void ShowDebug()
