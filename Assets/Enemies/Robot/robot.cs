@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class Robot : MonoBehaviour
 {
-    public int maxHealth;
-    private int health;
     public float maxAgro;
     public bool active;
 
@@ -15,7 +13,8 @@ public class Robot : MonoBehaviour
     private Collider2D boxCollider;
     public bool invincible = false;
     public AudioClip[] soundFX = new AudioClip[5];
-    private HealthBar healthBar;
+    // private HealthBar healthBar;
+    private Health health;
     private Transform controllerTransform;
 
     void Start()
@@ -25,16 +24,14 @@ public class Robot : MonoBehaviour
         boxCollider = GetComponentInChildren<Collider2D>();
         slideController = GetComponentInChildren<SlideController>();
         knockback = GetComponentInChildren<Knockback>();
-        healthBar = GetComponentInChildren<HealthBar>();
+        // healthBar = GetComponentInChildren<HealthBar>();
+        health = GetComponentInChildren<Health>();
         player = GameObject.Find("player").GetComponent<Player>();
-        health = maxHealth;
     }
 
     void Update()
     {
-        healthBar.health = health;
-
-        if (health <= 0f)
+        if (health.IsDead())
         {
             Destroy(gameObject);
         }
@@ -65,6 +62,7 @@ public class Robot : MonoBehaviour
         {
             slideController.horizontalInput = 0f;
         }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)

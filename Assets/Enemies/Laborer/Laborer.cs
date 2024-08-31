@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class Laborer : MonoBehaviour
 {
-    public int maxHealth;
-    private int health;
     public float maxAgro;
     public bool active;
 
@@ -26,20 +24,12 @@ public class Laborer : MonoBehaviour
         boxCollider = GetComponentInChildren<Collider2D>();
         slideController = GetComponentInChildren<SlideController>();
         knockback = GetComponentInChildren<Knockback>();
-        healthBar = GetComponentInChildren<HealthBar>();
+        // healthBar = GetComponentInChildren<HealthBar>();
         player = GameObject.Find("player").transform;
-        health = maxHealth;
     }
 
     void Update()
     {
-        healthBar.health = health;
-
-        if (health <= 0f)
-        {
-            Destroy(gameObject);
-        }
-
         if (!knockback.inKnockback)
         {
             Vector3 diff = player.position - controllerTransform.position;

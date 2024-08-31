@@ -6,12 +6,14 @@ public class HealthBar : MonoBehaviour
     public Sprite full;
     public Sprite empty;
     public float spacing = 0.25f;
-    public int health = 0;
     private List<GameObject> fullSprites = new List<GameObject>();
+
+    private Health health;
 
     void Start()
     {
-        ConstructHealthBar(transform.position, 3, 3);
+        health = gameObject.transform.parent.gameObject.GetComponentInChildren<Health>();
+        ConstructHealthBar(transform.position, health.Current(), health.Max());
     }
 
     void Update()
@@ -19,7 +21,7 @@ public class HealthBar : MonoBehaviour
         var i = 0;
         foreach (var sprite in fullSprites)
         {
-            if (i < health)
+            if (i < health.Current())
             {
                 sprite.GetComponent<SpriteRenderer>().enabled = true;
             }

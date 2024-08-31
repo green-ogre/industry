@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
-using NUnit.Framework.Constraints;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,6 +15,7 @@ public class Player : MonoBehaviour
 
 	private InputAction moveAction;
 	private InputAction jumpAction;
+	private InputAction attackAction;
 
 	public PlayerBodyType playerBodyType;
 	public GameObject[] bodies;
@@ -43,6 +39,11 @@ public class Player : MonoBehaviour
 	private SlideController CurrentSlideController()
 	{
 		return bodies[(int)playerBodyType].GetComponent<SlideController>();
+	}
+
+	private Attack CurrentAttack()
+	{
+		return bodies[(int)playerBodyType].GetComponentInChildren<Attack>();
 	}
 
 	private SpriteRenderer CurrentSpriteRenderer()
@@ -84,11 +85,12 @@ public class Player : MonoBehaviour
 	{
 		moveAction = InputSystem.actions.FindAction("Move");
 		jumpAction = InputSystem.actions.FindAction("Jump");
+		attackAction = InputSystem.actions.FindAction("Attack");
 		debugText = GetComponentInChildren<TMP_Text>();
-
 		playerBodyType = PlayerBodyType.LABORER;
 		SetPlayerBodyType(PlayerBodyType.LABORER);
 	}
+
 
 	void Update()
 	{
@@ -96,6 +98,17 @@ public class Player : MonoBehaviour
 
 		CurrentSlideController().horizontalInput = moveAction.ReadValue<Vector2>().x;
 		CurrentSlideController().jumpInput = jumpAction.ReadValue<float>() > 0;
+
+		if (attackAction.ReadValue<float>() > 0f)
+		{
+			var attack = CurrentAttack();
+			// Debug.Log("try attack input");
+			if (attack)
+			{
+				// Debug.Log("attack input");
+				attack.attack = true;
+			}
+		}
 	}
 
 	private void ShowDebug()

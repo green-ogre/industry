@@ -5,17 +5,20 @@ using UnityEngine.InputSystem;
 public class TakeOver : MonoBehaviour
 {
     public float takeOverDist;
+    public float takeOverHealth;
     public PlayerBodyType playerBodyType;
 
     private SpriteRenderer renderer;
     private Player player;
     private SlideController slideController;
     private Vector2 lastInputVector;
+    private Health health;
 
     void Start()
     {
         renderer = GetComponent<SpriteRenderer>();
         slideController = GetComponent<SlideController>();
+        health = transform.parent.gameObject.GetComponentInChildren<Health>();
         player = GameObject.Find("player").GetComponent<Player>();
     }
 
@@ -30,7 +33,7 @@ public class TakeOver : MonoBehaviour
 
         var pp = player.GetCurrentPosition();
         var diff = pp - transform.position;
-        if (Mathf.Abs(diff.magnitude) <= takeOverDist)
+        if (Mathf.Abs(diff.magnitude) <= takeOverDist && health.Current() <= takeOverHealth)
         {
             renderer.color = new Color(1f, 0f, 0f, 1f);
             if (Input.GetKeyDown(KeyCode.E))
@@ -39,7 +42,9 @@ public class TakeOver : MonoBehaviour
                 player.SetPlayerBodyType(playerBodyType);
                 player.SetPosition(transform.position);
                 player.SetOrientation(slideController.facingRight);
-                Destroy(gameObject);
+
+                // TODO: need a better way to despawn enemies that are taken over
+                health.SetDead();
             }
         }
         else
