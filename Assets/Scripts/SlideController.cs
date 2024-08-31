@@ -25,7 +25,7 @@ public class SlideController : MonoBehaviour
     public Vector2 lastVelocity;
     private bool jumpEnabled = true;
     private bool slideEnabled = true;
-    [System.NonSerialized] public bool isGrounded = true;
+    public bool isGrounded = true;
 
     [System.NonSerialized] public float horizontalInput;
     [System.NonSerialized] public bool jumpInput;
@@ -82,7 +82,7 @@ public class SlideController : MonoBehaviour
             gravity = Vector2.zero,
             surfaceAnchor = new Vector2(0, -0.05f),
             useLayerMask = true,
-            layerMask = new LayerMask() { value = ~LayerMask.NameToLayer("Ground") },
+            layerMask = new LayerMask() { value = (1 << LayerMask.NameToLayer("Ground")) },
         };
     }
 

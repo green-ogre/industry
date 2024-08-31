@@ -20,15 +20,15 @@ public class Knockback : MonoBehaviour
     public void HandleCollisionEnter2D(Collider2D other)
     {
         Player player = other.gameObject.GetComponent<Player>();
-        if (player && player.dashing)
-        {
-            Rigidbody2D playerRigid = other.gameObject.GetComponent<Rigidbody2D>();
-            float timeForPlayerToDodgeThrough = 0.1f;
-            dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
-            knockbackVector = playerRigid.linearVelocity;
-            slideController.enabled = false;
-            inKnockback = true;
-        }
+        // if (player && player.dashing)
+        // {
+        //     Rigidbody2D playerRigid = other.gameObject.GetComponent<Rigidbody2D>();
+        //     float timeForPlayerToDodgeThrough = 0.1f;
+        //     dashContactTimer = player.dashContactTimeout + timeForPlayerToDodgeThrough;
+        //     knockbackVector = playerRigid.linearVelocity;
+        //     slideController.enabled = false;
+        //     inKnockback = true;
+        // }
     }
 
     void FixedUpdate()

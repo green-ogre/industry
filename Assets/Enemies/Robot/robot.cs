@@ -9,7 +9,7 @@ public class Robot : MonoBehaviour
 
     private SlideController slideController;
     private Knockback knockback;
-    private Transform player;
+    private Player player;
 
     private Rigidbody2D rigidBody;
     private Collider2D boxCollider;
@@ -26,7 +26,7 @@ public class Robot : MonoBehaviour
         slideController = GetComponentInChildren<SlideController>();
         knockback = GetComponentInChildren<Knockback>();
         healthBar = GetComponentInChildren<HealthBar>();
-        player = GameObject.Find("player").transform;
+        player = GameObject.Find("player").GetComponent<Player>();
         health = maxHealth;
     }
 
@@ -41,12 +41,12 @@ public class Robot : MonoBehaviour
 
         if (!knockback.inKnockback)
         {
-            Vector3 diff = player.position - controllerTransform.position;
+            Vector3 diff = player.GetCurrentPosition() - controllerTransform.position;
             if (Mathf.Abs(diff.magnitude) <= maxAgro)
             {
                 if (active)
                 {
-                    if (player.position.x > controllerTransform.position.x)
+                    if (player.GetCurrentPosition().x > controllerTransform.position.x)
                     {
                         slideController.horizontalInput = 1;
                     }
