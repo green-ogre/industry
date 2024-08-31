@@ -295,7 +295,7 @@ public class Player : MonoBehaviour
 
 	private static bool ContainsDashInteract(Collider2D other)
 	{
-		return (other.includeLayers.value & LayerMask.GetMask("DashInteract")) > 0 || (other.includeLayers.value & LayerMask.GetMask("Enemy")) > 0;
+		return (other.includeLayers.value & (1 << LayerMask.GetMask("DashInteract"))) > 0 || (other.includeLayers.value & (1 << LayerMask.GetMask("Enemy"))) > 0;
 	}
 
 	private void HandleDashCollision(Collider2D other)
