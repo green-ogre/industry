@@ -29,6 +29,8 @@ public class Player : MonoBehaviour
 
 	public TMP_Text debugText;
 
+	private GameObject lastObject;
+
 	public void InsertEnemy(TakeOver enemy)
 	{
 		if (!nearbyEnemies.Contains(enemy))
@@ -40,6 +42,18 @@ public class Player : MonoBehaviour
 	public void RemoveEnemy(TakeOver enemy)
 	{
 		nearbyEnemies.Remove(enemy);
+	}
+
+	public void TakeOverBody(GameObject lastBody, PlayerBodyType type)
+	{
+		if (lastObject)
+		{
+			lastObject.transform.position = GetCurrentPosition();
+			lastObject.SetActive(true);
+		}
+
+		SetPlayerBodyType(type);
+		lastObject = lastBody;
 	}
 
 	public void SetPlayerBodyType(PlayerBodyType type)
@@ -192,7 +206,8 @@ public class Player : MonoBehaviour
 				if (Input.GetKeyDown(KeyCode.E))
 				{
 					// TODO: see if the last input is pointing towards you
-					SetPlayerBodyType(closest.playerBodyType);
+					TakeOverBody(closest.gameObject, closest.playerBodyType);
+					// SetPlayerBodyType(closest.playerBodyType);
 					SetPosition(currentPosition);
 					SetOrientation(closest.Orientation());
 
