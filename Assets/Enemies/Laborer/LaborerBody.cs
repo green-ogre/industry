@@ -7,7 +7,6 @@ public class LaborerBody : MonoBehaviour
 
     void Update()
     {
-        // Debug.Log("hello");
         bool isGrounded = slideController.isGrounded;
         animator.SetBool("isFalling", !isGrounded);
         float x = AxisNormalize.Movement(Input.GetAxisRaw("Horizontal"));

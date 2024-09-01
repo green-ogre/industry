@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   takeOverDist: 0
+  takeOverHealth: 0
   playerBodyType: 0
 --- !u!114 &161596844387184097
 MonoBehaviour:
@@ -355,7 +356,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1009752948863664489, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.021
       objectReference: {fileID: 0}
     - target: {fileID: 1009752948863664489, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -363,7 +364,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1009752948863664489, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1009752948863664489, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -412,6 +413,22 @@ PrefabInstance:
     - target: {fileID: 4946649878501878601, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_Name
       value: Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 7274775233902072602, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769604780931254039, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769604780931254039, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8078425539839051554, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
+      propertyPath: m_PlayAutomatically
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8237998189832161881, guid: cf2d4d960dfdd0fca9d7ae06b9f735a1, type: 3}
       propertyPath: m_Size.x

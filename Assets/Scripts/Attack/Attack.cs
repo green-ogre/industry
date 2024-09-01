@@ -14,6 +14,9 @@ public class Attack : MonoBehaviour
     private bool facingRight;
     [SerializeField] private int damage;
 
+    public Animation animation;
+    private SpriteRenderer renderer;
+
     public int Damage()
     {
         return damage;
@@ -21,6 +24,10 @@ public class Attack : MonoBehaviour
 
     void Start()
     {
+        animation = GetComponent<Animation>();
+        renderer = GetComponent<SpriteRenderer>();
+        renderer.enabled = false;
+
         facingRight = true;
         hitBox = GetComponent<BoxCollider2D>();
         hitBox.enabled = false;
@@ -34,6 +41,9 @@ public class Attack : MonoBehaviour
             attackDurationTimer = attackDuration;
             hitBox.enabled = true;
             attack = false;
+
+            renderer.enabled = true;
+            animation.Play();
         }
 
         if (attackDurationTimer > 0f)
@@ -50,6 +60,7 @@ public class Attack : MonoBehaviour
         if (attackCooldown > 0f)
         {
             attackCooldown -= Time.deltaTime;
+            renderer.enabled = false;
         }
 
         float horz = moveAction.ReadValue<Vector2>().x;
@@ -65,6 +76,10 @@ public class Attack : MonoBehaviour
 
     public void Flip()
     {
-        hitBox.offset = new Vector2(-hitBox.offset.x, hitBox.offset.y);
+        // hitBox.offset = new Vector2(-hitBox.offset.x, hitBox.offset.y);
+        var scale = transform.localScale;
+        scale.x = -scale.x;
+        transform.localScale = scale;
+        facingRight = !facingRight;
     }
 }

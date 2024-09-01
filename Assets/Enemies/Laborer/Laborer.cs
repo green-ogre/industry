@@ -58,29 +58,4 @@ public class Laborer : MonoBehaviour
         }
 
     }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // Player player = other.gameObject.GetComponent<Player>();
-        // if (player && player.dashing)
-        // {
-        //     Debug.Log("enemy recieve collision");
-
-        //     rigidBody.bodyType = RigidbodyType2D.Kinematic;
-        //     boxCollider.enabled = false;
-        //     slideController.enabled = false;
-        //     knockback.HandleCollisionEnter2D(other);
-
-        //     if (!invincible)
-        //     {
-        //         health -= 1;
-        //         // AudioMaster.instance.PlayClip(soundFX[0], Vector3.zero, 1f);
-
-        //         if (health <= 0)
-        //         {
-        //             player.SetPlayerBodyType(PlayerBodyType.DEFAULT);
-        //         }
-        //     }
-        // }
-    }
 }
