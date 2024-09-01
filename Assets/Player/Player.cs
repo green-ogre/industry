@@ -200,7 +200,6 @@ public class Player : MonoBehaviour
 
 					// TODO: need a better way to despawn enemies that are taken over
 					closest.SetDead();
-					nearbyEnemies.RemoveAt(nearbyEnemies.Count - 1);
 				}
 			}
 		}
