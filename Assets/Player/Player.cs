@@ -44,15 +44,33 @@ public class Player : MonoBehaviour
 		nearbyEnemies.Remove(enemy);
 	}
 
+	private static void SetMovementState(GameObject lastObject, GameObject newObject)
+	{
+		// var slideController = lastObject.GetComponent<SlideController>();
+		// var currentSlideController = newObject.GetComponent<SlideController>();
+		// slideController.facingRight = currentSlideController.facingRight;
+		// slideController.isGrounded = currentSlideController.isGrounded;
+		// slideController.lastDirection = currentSlideController.lastDirection;
+		// slideController.lastVelocity = currentSlideController.lastVelocity;
+		// slideController.horizontalInput = currentSlideController.horizontalInput;
+		// slideController.jumpInput = currentSlideController.jumpInput;
+
+		// var rigidBody = lastObject.GetComponent<Rigidbody2D>();
+		// rigidBody.linearVelocity = newObject.GetComponent<Rigidbody2D>().linearVelocity;
+	}
+
 	public void TakeOverBody(GameObject newBody, PlayerBodyType type)
 	{
 		if (lastObject)
 		{
 			lastObject.transform.position = GetCurrentPosition();
 			lastObject.SetActive(true);
+			Player.SetMovementState(lastObject, transform.gameObject);
 		}
 
 		SetPlayerBodyType(type);
+		Player.SetMovementState(transform.gameObject, newBody);
+		newBody.SetActive(false);
 		lastObject = newBody;
 	}
 
@@ -73,6 +91,11 @@ public class Player : MonoBehaviour
 	private SlideController CurrentSlideController()
 	{
 		return bodies[(int)playerBodyType].GetComponent<SlideController>();
+	}
+
+	private Rigidbody2D CurrentRigidBody()
+	{
+		return bodies[(int)playerBodyType].GetComponent<Rigidbody2D>();
 	}
 
 	private Attack CurrentAttack()
