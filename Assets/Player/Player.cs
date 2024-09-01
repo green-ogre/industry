@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
 		nearbyEnemies.Remove(enemy);
 	}
 
-	public void TakeOverBody(GameObject lastBody, PlayerBodyType type)
+	public void TakeOverBody(GameObject newBody, PlayerBodyType type)
 	{
 		if (lastObject)
 		{
@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 		}
 
 		SetPlayerBodyType(type);
-		lastObject = lastBody;
+		lastObject = newBody;
 	}
 
 	public void SetPlayerBodyType(PlayerBodyType type)
@@ -94,12 +94,6 @@ public class Player : MonoBehaviour
 	{
 		bodies[(int)playerBodyType].transform.position = position;
 		bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position = position;
-	}
-
-	public void SetOrientation(bool facingRight)
-	{
-		CurrentSlideController().facingRight = facingRight;
-		CurrentSpriteRenderer().flipX = !facingRight;
 	}
 
 	private bool IsDashing()
@@ -208,18 +202,15 @@ public class Player : MonoBehaviour
 				if (Input.GetKeyDown(KeyCode.E))
 				{
 					// TODO: see if the last input is pointing towards you
-<<<<<<< HEAD
 					TakeOverBody(closest.gameObject, closest.playerBodyType);
 					// SetPlayerBodyType(closest.playerBodyType);
-					SetPosition(currentPosition);
-=======
-					SetPlayerBodyType(closest.playerBodyType);
-					SetPosition(closest.Position());
->>>>>>> c7f3220c1e3298aad73080a03bc53980954fc160
-					SetOrientation(closest.Orientation());
+					// SetPosition(currentPosition);
+					CurrentSlideController().SetOrientation(closest.Orientation());
+					SetPosition(closest.gameObject.transform.position);
 
 					// TODO: need a better way to despawn enemies that are taken over
-					closest.SetDead();
+					// closest.SetDead();
+					closest.gameObject.SetActive(false);
 				}
 			}
 		}
