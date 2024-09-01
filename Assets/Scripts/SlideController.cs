@@ -221,6 +221,22 @@ public class SlideController : MonoBehaviour
         return justPressed;
     }
 
+    public void SetOrientation(bool isFacingRight)
+    {
+        facingRight = isFacingRight;
+        var scale = transform.localScale;
+        if (facingRight && scale.x < 0f)
+        {
+            scale.x = -scale.x;
+            transform.localScale = scale;
+        }
+        else if (!facingRight && scale.x > 0f)
+        {
+            scale.x = -scale.x;
+            transform.localScale = scale;
+        }
+    }
+
     private void Flip()
     {
         // Switch the way the player is labelled as facing.

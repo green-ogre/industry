@@ -37,6 +37,7 @@ public class TakeOver : MonoBehaviour
         return slideController.facingRight;
     }
 
+
     public void SetSelected(bool selected)
     {
         if (selected)

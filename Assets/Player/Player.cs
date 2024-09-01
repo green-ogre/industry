@@ -30,6 +30,8 @@ public class Player : MonoBehaviour
 
 	public TMP_Text debugText;
 
+	private GameObject lastObject;
+
 	public void InsertEnemy(TakeOver enemy)
 	{
 		if (!nearbyEnemies.Contains(enemy))
@@ -41,6 +43,36 @@ public class Player : MonoBehaviour
 	public void RemoveEnemy(TakeOver enemy)
 	{
 		nearbyEnemies.Remove(enemy);
+	}
+
+	private static void SetMovementState(GameObject lastObject, GameObject newObject)
+	{
+		// var slideController = lastObject.GetComponent<SlideController>();
+		// var currentSlideController = newObject.GetComponent<SlideController>();
+		// slideController.facingRight = currentSlideController.facingRight;
+		// slideController.isGrounded = currentSlideController.isGrounded;
+		// slideController.lastDirection = currentSlideController.lastDirection;
+		// slideController.lastVelocity = currentSlideController.lastVelocity;
+		// slideController.horizontalInput = currentSlideController.horizontalInput;
+		// slideController.jumpInput = currentSlideController.jumpInput;
+
+		// var rigidBody = lastObject.GetComponent<Rigidbody2D>();
+		// rigidBody.linearVelocity = newObject.GetComponent<Rigidbody2D>().linearVelocity;
+	}
+
+	public void TakeOverBody(GameObject newBody, PlayerBodyType type)
+	{
+		if (lastObject)
+		{
+			lastObject.transform.position = GetCurrentPosition();
+			lastObject.SetActive(true);
+			Player.SetMovementState(lastObject, transform.gameObject);
+		}
+
+		SetPlayerBodyType(type);
+		Player.SetMovementState(transform.gameObject, newBody);
+		newBody.SetActive(false);
+		lastObject = newBody;
 	}
 
 	public void SetPlayerBodyType(PlayerBodyType type)
@@ -62,6 +94,11 @@ public class Player : MonoBehaviour
 		return bodies[(int)playerBodyType].GetComponent<SlideController>();
 	}
 
+	private Rigidbody2D CurrentRigidBody()
+	{
+		return bodies[(int)playerBodyType].GetComponent<Rigidbody2D>();
+	}
+
 	private Attack CurrentAttack()
 	{
 		return bodies[(int)playerBodyType].GetComponentInChildren<Attack>();
@@ -81,12 +118,6 @@ public class Player : MonoBehaviour
 	{
 		bodies[(int)playerBodyType].transform.position = position;
 		bodies[(int)playerBodyType].GetComponent<Rigidbody2D>().position = position;
-	}
-
-	public void SetOrientation(bool facingRight)
-	{
-		CurrentSlideController().facingRight = facingRight;
-		CurrentSpriteRenderer().flipX = !facingRight;
 	}
 
 	private bool IsDashing()
@@ -194,12 +225,13 @@ public class Player : MonoBehaviour
 
 				if (Input.GetKeyDown(KeyCode.E))
 				{
-					SetPlayerBodyType(closest.playerBodyType);
-					SetPosition(closest.Position());
-					SetOrientation(closest.Orientation());
+					TakeOverBody(closest.gameObject, closest.playerBodyType);
+					CurrentSlideController().SetOrientation(closest.Orientation());
+					SetPosition(closest.gameObject.transform.position);
 
 					// TODO: need a better way to despawn enemies that are taken over
-					closest.SetDead();
+					// closest.SetDead();
+					closest.gameObject.SetActive(false);
 				}
 			}
 		}
