@@ -22,6 +22,33 @@ public class TakeOver : MonoBehaviour
         player = GameObject.Find("player").GetComponent<Player>();
     }
 
+    public Vector2 Position()
+    {
+        return transform.position;
+    }
+
+    public void SetDead()
+    {
+        health.SetDead();
+    }
+
+    public bool Orientation()
+    {
+        return slideController.facingRight;
+    }
+
+    public void SetSelected(bool selected)
+    {
+        if (selected)
+        {
+            renderer.color = new Color(1f, 0f, 0f, 1f);
+        }
+        else
+        {
+            renderer.color = new Color(1f, 1f, 1f, 1f);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -35,21 +62,12 @@ public class TakeOver : MonoBehaviour
         var diff = pp - transform.position;
         if (Mathf.Abs(diff.magnitude) <= takeOverDist && health.Current() <= takeOverHealth)
         {
-            renderer.color = new Color(1f, 0f, 0f, 1f);
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                // TODO: see if the last input is pointing towards you
-                player.SetPlayerBodyType(playerBodyType);
-                player.SetPosition(transform.position);
-                player.SetOrientation(slideController.facingRight);
-
-                // TODO: need a better way to despawn enemies that are taken over
-                health.SetDead();
-            }
+            player.InsertEnemy(this);
         }
         else
         {
-            renderer.color = new Color(1f, 1f, 1f, 1f);
+            player.RemoveEnemy(this);
+            SetSelected(false);
         }
     }
 }

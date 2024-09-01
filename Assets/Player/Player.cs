@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework.Constraints;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,10 +20,27 @@ public class Player : MonoBehaviour
 	private InputAction jumpAction;
 	private InputAction attackAction;
 
+	private List<TakeOver> nearbyEnemies = new();
+
 	public PlayerBodyType playerBodyType;
 	public GameObject[] bodies;
 
+	private Vector2 lastInputVector;
+
 	public TMP_Text debugText;
+
+	public void InsertEnemy(TakeOver enemy)
+	{
+		if (!nearbyEnemies.Contains(enemy))
+		{
+			nearbyEnemies.Add(enemy);
+		}
+	}
+
+	public void RemoveEnemy(TakeOver enemy)
+	{
+		nearbyEnemies.Remove(enemy);
+	}
 
 	public void SetPlayerBodyType(PlayerBodyType type)
 	{
@@ -107,6 +127,79 @@ public class Player : MonoBehaviour
 			{
 				// Debug.Log("attack input");
 				attack.attack = true;
+			}
+		}
+	}
+
+	void LateUpdate()
+	{
+		Vector2 lastInput = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
+		if (lastInput.magnitude > 0.2)
+		{
+			lastInputVector = lastInput;
+		}
+		Vector2 currentPosition = GetCurrentPosition();
+
+		// Sort first by comparing the direction of player intention to the direction to the enemy.
+		// For enemies where this value is identical, sort by distance.
+		nearbyEnemies.Sort((a, b) =>
+		{
+			var comp = Vector2.Dot(
+				(a.Position() - currentPosition).normalized,
+				lastInputVector.normalized
+			)
+			.CompareTo(
+				Vector2.Dot(
+					(b.Position() - currentPosition).normalized,
+					lastInputVector.normalized
+				)
+			);
+
+			if (comp == 0)
+			{
+				return Vector2.Distance(
+					a.Position(),
+					transform.position
+				)
+				.CompareTo(
+					Vector2.Distance(
+						b.Position(),
+						transform.position
+					)
+				);
+			}
+
+			return comp;
+		});
+
+		foreach (var enemy in nearbyEnemies)
+		{
+			enemy.SetSelected(false);
+		}
+
+		if (nearbyEnemies.Count > 0)
+		{
+			var closest = nearbyEnemies
+				.AsEnumerable()
+				.Reverse()
+				.Where(e => Vector2.Dot(e.Position() - currentPosition, lastInputVector) > 0)
+				.FirstOrDefault();
+
+			if (closest != null)
+			{
+				closest.SetSelected(true);
+
+				if (Input.GetKeyDown(KeyCode.E))
+				{
+					// TODO: see if the last input is pointing towards you
+					SetPlayerBodyType(closest.playerBodyType);
+					SetPosition(currentPosition);
+					SetOrientation(closest.Orientation());
+
+					// TODO: need a better way to despawn enemies that are taken over
+					closest.SetDead();
+					nearbyEnemies.RemoveAt(nearbyEnemies.Count - 1);
+				}
 			}
 		}
 	}
