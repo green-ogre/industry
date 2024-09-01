@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3145693151663446287}
   - component: {fileID: 8237998189832161881}
   - component: {fileID: 7769604780931254039}
-  - component: {fileID: 7274775233902072602}
   - component: {fileID: 8078425539839051554}
   m_Layer: 10
   m_Name: Attack
@@ -53,7 +52,7 @@ MonoBehaviour:
   attack: 0
   hitBox: {fileID: 8237998189832161881}
   damage: 0
-  animation: {fileID: 0}
+  animation: {fileID: 8078425539839051554}
 --- !u!61 &8237998189832161881
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -155,28 +154,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &7274775233902072602
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4946649878501878601}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d0754d676854407249857b410ded5352, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!111 &8078425539839051554
 Animation:
   m_ObjectHideFlags: 0

@@ -1,4 +1,19 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
+
+enum RobotState
+{
+    WANDERING,
+    CHASING,
+    ATTACKING,
+}
+
+enum SelectedPoint
+{
+    RIGHT,
+    LEFT
+}
 
 public class Robot : MonoBehaviour
 {
@@ -17,8 +32,26 @@ public class Robot : MonoBehaviour
     private Health health;
     private Transform controllerTransform;
 
+    private RobotState state;
+    public GameObject rightPoint;
+    public GameObject leftPoint;
+
+    private SelectedPoint selectedPoint;
+    private float waitTimer;
+    private Attack attack;
+    public float attackCooldownDuration;
+    public float attackRange;
+    private float attackCooldown;
+
+    private TMP_Text debugText;
+
     void Start()
     {
+        debugText = GetComponentInChildren<TMP_Text>();
+
+        attack = GetComponentInChildren<Attack>();
+        selectedPoint = SelectedPoint.RIGHT;
+        state = RobotState.WANDERING;
         controllerTransform = transform.Find("RobotBody");
         rigidBody = GetComponentInChildren<Rigidbody2D>();
         boxCollider = GetComponentInChildren<Collider2D>();
@@ -31,62 +64,182 @@ public class Robot : MonoBehaviour
 
     void Update()
     {
+        ShowDebug();
+
         if (health.IsDead())
         {
             Destroy(gameObject);
         }
 
-        if (!knockback.inKnockback)
+        switch (state)
         {
-            Vector3 diff = player.GetCurrentPosition() - controllerTransform.position;
-            if (Mathf.Abs(diff.magnitude) <= maxAgro)
-            {
-                if (active)
+            case RobotState.WANDERING:
                 {
-                    if (player.GetCurrentPosition().x > controllerTransform.position.x)
+                    Wander();
+                    break;
+                }
+            case RobotState.CHASING:
+                {
+                    Chase();
+                    break;
+                }
+            case RobotState.ATTACKING:
+                {
+                    Attack();
+                    break;
+                }
+        }
+    }
+
+    private void Wander()
+    {
+        attackCooldown = 0f;
+
+        if (waitTimer > 0f)
+        {
+            waitTimer -= Time.deltaTime;
+            slideController.horizontalInput = 0f;
+            return;
+        }
+
+        var point = selectedPoint switch
+        {
+            SelectedPoint.RIGHT => rightPoint,
+            SelectedPoint.LEFT => leftPoint,
+        };
+
+        if (Mathf.Abs(rigidBody.position.x - point.transform.position.x) < 1f)
+        {
+            PauseForRandSeconds();
+            switch (selectedPoint)
+            {
+                case SelectedPoint.RIGHT:
+                    {
+                        selectedPoint = SelectedPoint.LEFT;
+                        break;
+                    }
+                case SelectedPoint.LEFT:
+                    {
+                        selectedPoint = SelectedPoint.RIGHT;
+                        break;
+                    }
+            }
+        }
+        else
+        {
+            switch (selectedPoint)
+            {
+                case SelectedPoint.RIGHT:
                     {
                         slideController.horizontalInput = 1;
+                        break;
                     }
-                    else
+                case SelectedPoint.LEFT:
                     {
                         slideController.horizontalInput = -1;
+                        break;
                     }
-                }
+            }
+        }
+
+        if (PlayerInDistance())
+        {
+            if (active)
+            {
+                state = RobotState.CHASING;
+            }
+        }
+    }
+
+    private bool PlayerInDistance()
+    {
+        return Mathf.Abs(player.GetCurrentPosition().x - controllerTransform.position.x) <= maxAgro;
+    }
+
+    private void Chase()
+    {
+        // if (!knockback.inKnockback)
+        // {
+
+        if (waitTimer > 0f)
+        {
+            waitTimer -= Time.deltaTime;
+            return;
+        }
+
+        if (PlayerInDistance())
+        {
+            if (attackCooldown > 0f)
+            {
+                attackCooldown -= Time.deltaTime;
+            }
+
+            var diff = player.GetCurrentPosition().x - controllerTransform.position.x;
+            if (Mathf.Abs(diff) <= attackRange && attackCooldown <= 0f)
+            {
+                state = RobotState.ATTACKING;
+                attackCooldown = attackCooldownDuration;
+                slideController.horizontalInput = 0;
+            }
+            else if (Mathf.Abs(diff) <= attackRange)
+            {
+                slideController.horizontalInput = 0;
             }
             else
             {
-                slideController.horizontalInput = 0f;
+                if (player.GetCurrentPosition().x > controllerTransform.position.x)
+                {
+                    slideController.horizontalInput = 1;
+                }
+                else
+                {
+                    slideController.horizontalInput = -1;
+                }
             }
         }
-        else if (!knockback.inKnockback)
+        else
         {
             slideController.horizontalInput = 0f;
+            PauseForRandSeconds();
+            state = RobotState.WANDERING;
         }
-
+        // }
+        // else if (!knockback.inKnockback)
+        // {
+        //     slideController.horizontalInput = 0f;
+        //     state = RobotState.WANDERING;
+        //     PauseForRandSeconds();
+        // }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void Attack()
     {
-        // Player player = other.gameObject.GetComponent<Player>();
-        // if (player && player.dashing)
-        // {
-        //     Debug.Log("enemy recieve collision");
+        Debug.Log("robot attack!");
+        attack.attack = true;
+        // PauseForRandSeconds(0.5f, 1.5f);
+        state = RobotState.CHASING;
+    }
 
-        //     rigidBody.bodyType = RigidbodyType2D.Kinematic;
-        //     boxCollider.enabled = false;
-        //     slideController.enabled = false;
-        //     knockback.HandleCollisionEnter2D(other);
+    private void PauseForRandSeconds()
+    {
+        waitTimer = Random.Range(1f, 3f);
+    }
 
-        //     if (!invincible)
-        //     {
-        //         health -= 1;
-        //         // AudioMaster.instance.PlayClip(soundFX[0], Vector3.zero, 1f);
+    private void PauseForRandSeconds(float min, float max)
+    {
+        waitTimer = Random.Range(min, max);
+    }
 
-        //         if (health <= 0)
-        //         {
-        //             player.SetPlayerBodyType(PlayerBodyType.DEFAULT);
-        //         }
-        //     }
-        // }
+    private IEnumerator ChooseWanderDirection()
+    {
+        for (; ; )
+        {
+            yield return new WaitForSeconds(Random.Range(2f, 5f));
+        }
+    }
+
+    private void ShowDebug()
+    {
+        debugText.text = System.String.Format("State: {0}\nAttack Cooldown: {1}\nDist: {2}", state, attackCooldown, Mathf.Abs(player.GetCurrentPosition().x - controllerTransform.position.x));
     }
 }

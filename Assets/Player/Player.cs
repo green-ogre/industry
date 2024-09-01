@@ -123,18 +123,6 @@ public class Player : MonoBehaviour
 			SetPlayerBodyType(PlayerBodyType.ROBOT);
 		}
 
-		switch (playerBodyType)
-		{
-			case PlayerBodyType.LABORER:
-				{
-					debugText.text = "BodyType: Laborer";
-					break;
-				}
-			case PlayerBodyType.ROBOT:
-				{
-					debugText.text = "BodyType: ROBOT";
-					break;
-				}
-		}
+		debugText.text = System.String.Format("{0}", playerBodyType);
 	}
 }

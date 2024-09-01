@@ -1,6 +1,7 @@
 using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class SlideController : MonoBehaviour
 {
@@ -225,7 +226,18 @@ public class SlideController : MonoBehaviour
         // Switch the way the player is labelled as facing.
         facingRight = !facingRight;
 
-        spriteRenderer.flipX = !spriteRenderer.flipX;
+        // spriteRenderer.flipX = !spriteRenderer.flipX;
+        var scale = transform.localScale;
+        if (facingRight && scale.x < 0f)
+        {
+            scale.x = -scale.x;
+            transform.localScale = scale;
+        }
+        else if (!facingRight && scale.x > 0f)
+        {
+            scale.x = -scale.x;
+            transform.localScale = scale;
+        }
     }
 
     private void UpdateGrounded()

@@ -77,9 +77,9 @@ public class Attack : MonoBehaviour
     public void Flip()
     {
         // hitBox.offset = new Vector2(-hitBox.offset.x, hitBox.offset.y);
-        var scale = transform.localScale;
-        scale.x = -scale.x;
-        transform.localScale = scale;
-        facingRight = !facingRight;
+        // var scale = transform.localScale;
+        // scale.x = -scale.x;
+        // transform.localScale = scale;
+        // facingRight = !facingRight;
     }
 }
