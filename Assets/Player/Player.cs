@@ -9,6 +9,7 @@ public enum PlayerBodyType : int
 {
 	LABORER,
 	ROBOT,
+	SPIDER,
 }
 
 public class Player : MonoBehaviour
@@ -107,8 +108,8 @@ public class Player : MonoBehaviour
 		jumpAction = InputSystem.actions.FindAction("Jump");
 		attackAction = InputSystem.actions.FindAction("Attack");
 		debugText = GetComponentInChildren<TMP_Text>();
-		playerBodyType = PlayerBodyType.LABORER;
-		SetPlayerBodyType(PlayerBodyType.LABORER);
+		playerBodyType = PlayerBodyType.SPIDER;
+		SetPlayerBodyType(PlayerBodyType.SPIDER);
 	}
 
 
@@ -193,7 +194,6 @@ public class Player : MonoBehaviour
 
 				if (Input.GetKeyDown(KeyCode.E))
 				{
-					// TODO: see if the last input is pointing towards you
 					SetPlayerBodyType(closest.playerBodyType);
 					SetPosition(closest.Position());
 					SetOrientation(closest.Orientation());
