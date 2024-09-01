@@ -154,6 +154,8 @@ public class Player : MonoBehaviour
 		}
 		Vector2 currentPosition = GetCurrentPosition();
 
+		nearbyEnemies.RemoveAll(e => e == null);
+
 		// Sort first by comparing the direction of player intention to the direction to the enemy.
 		// For enemies where this value is identical, sort by distance.
 		nearbyEnemies.Sort((a, b) =>
@@ -206,14 +208,18 @@ public class Player : MonoBehaviour
 				if (Input.GetKeyDown(KeyCode.E))
 				{
 					// TODO: see if the last input is pointing towards you
+<<<<<<< HEAD
 					TakeOverBody(closest.gameObject, closest.playerBodyType);
 					// SetPlayerBodyType(closest.playerBodyType);
 					SetPosition(currentPosition);
+=======
+					SetPlayerBodyType(closest.playerBodyType);
+					SetPosition(closest.Position());
+>>>>>>> c7f3220c1e3298aad73080a03bc53980954fc160
 					SetOrientation(closest.Orientation());
 
 					// TODO: need a better way to despawn enemies that are taken over
 					closest.SetDead();
-					nearbyEnemies.RemoveAt(nearbyEnemies.Count - 1);
 				}
 			}
 		}
