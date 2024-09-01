@@ -140,6 +140,8 @@ public class Player : MonoBehaviour
 		}
 		Vector2 currentPosition = GetCurrentPosition();
 
+		nearbyEnemies.RemoveAll(e => e == null);
+
 		// Sort first by comparing the direction of player intention to the direction to the enemy.
 		// For enemies where this value is identical, sort by distance.
 		nearbyEnemies.Sort((a, b) =>
@@ -193,7 +195,7 @@ public class Player : MonoBehaviour
 				{
 					// TODO: see if the last input is pointing towards you
 					SetPlayerBodyType(closest.playerBodyType);
-					SetPosition(currentPosition);
+					SetPosition(closest.Position());
 					SetOrientation(closest.Orientation());
 
 					// TODO: need a better way to despawn enemies that are taken over
